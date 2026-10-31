@@ -40,7 +40,7 @@ This entire bioinformatics suite was architected and built in an intense develop
 
 I defined the biological logic (translating the Standard Genetic Code, handling start/stop codons, mapping reading frames), the UI/UX "Bio-Cyber" ecosystem, and the strict privacy parameters (zero-server data processing). Gemini acted as my syntax translator, allowing me to build at the speed of thought. 
 
-The scientific method—running a test, observing the sequence output, refining the prompt, and iterating—is language-agnostic. This project proves that with modern AI, domain experts can architect complex software tools tailored perfectly to their own industry's needs without waiting on external IT departments.
+The scientific method - running a test, observing the sequence output, refining the prompt, and iterating - is language-agnostic. This project proves that with modern AI, domain experts can architect complex software tools tailored perfectly to their own industry's needs without waiting on external IT departments.
 
 ## 🚀 Technical Stack
 - **Core Logic:** Vanilla JavaScript (ES6+), HTML5, CSS3.
