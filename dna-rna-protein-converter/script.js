@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'GGU': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'
     };
 
-    // CoreFASTA Parser (Isolates valid DNA bases: A, T, G, C)
+    // CoreFASTA Parser (Isolates valid DNA bases: A, T, G, C and strips headers)
     const cleanDNASequence = (rawText) => {
         let lines = rawText.split('\n');
         let sequenceLines = lines.filter(line => !line.trim().startsWith('>'));
@@ -52,18 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return rawSeq.replace(/[^AaTtGgCc]/g, '').toUpperCase();
     };
 
-    // Update character counts dynamically based on active values
-    const updateCounts = (dnaText = '', rnaText = '', proteinText = '') => {
-        const cleanDNA = cleanDNASequence(dnaText || dnaInput.value);
-        const cleanRNA = rnaText.replace(/[^AUGC]/g, '');
-        const cleanProtein = proteinText.replace(/[^A-Z*]/g, '');
+    // Update character counts dynamically based on cleaned strings
+    const updateCounts = () => {
+        const cleanDNA = cleanDNASequence(dnaInput.value);
+        const cleanRNA = rnaOutput.value.replace(/[^AUGC]/g, '');
+        const cleanProtein = proteinOutput.value.replace(/[^A-Z*]/g, '');
         
         inputCount.textContent = `${cleanDNA.length} bases`;
         rnaCount.textContent = `${cleanRNA.length} bases`;
         proteinCount.textContent = `${cleanProtein.length} aa`;
     };
 
-    dnaInput.addEventListener('input', () => updateCounts());
+    dnaInput.addEventListener('input', updateCounts);
 
     // Step 1: Transcription (DNA Coding Strand -> RNA)
     const transcribeToRNA = (dnaSeq) => {
@@ -108,8 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
         rnaOutput.value = rnaTranscript;
         proteinOutput.value = proteinChain;
         
-        // Update counts with actual processed outputs
-        updateCounts(cleanDNA, rnaTranscript, proteinChain);
+        // Update counts instantly
+        updateCounts();
     });
 
     // Clear Workspace
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dnaInput.value = '';
         rnaOutput.value = '';
         proteinOutput.value = '';
-        updateCounts('', '', '');
+        updateCounts();
     });
 
     // --- COPY FUNCTIONS ---
@@ -186,8 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         reader.onload = (e) => {
             dnaInput.value = e.target.result;
-            const cleanDNA = cleanDNASequence(e.target.result);
-            updateCounts(cleanDNA, '', '');
+            updateCounts();
         };
         reader.readAsText(file);
     };
