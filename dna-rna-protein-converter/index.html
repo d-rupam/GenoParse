@@ -171,7 +171,9 @@
         .panel-title i { margin-top: 3px; }
         .char-count { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; white-space: nowrap; margin-top: 3px; }
 
-        .sequence-area { width: 100%; height: 220px; background-color: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem; color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; resize: vertical; margin-bottom: 1rem; outline: none; transition: border-color 0.3s; }
+        .sequence-area { width: 100%; height: 220px; background-color: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem; color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; resize: vertical; margin-bottom: 1rem; outline: none; transition: border-color 0.3s; white-space: pre;       /* Prevents the browser from calculating line breaks */
+    overflow-wrap: normal;  /* Stops word wrapping */
+    overflow-x: auto;       /* Adds a horizontal scrollbar instead */}
         .sequence-area:focus { border-color: var(--theme-color); }
         .sequence-area.output-area { color: var(--theme-color); background-color: rgba(139, 92, 246, 0.02); }
 
