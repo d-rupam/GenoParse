@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Optimized Title & Meta Description -->
+    <title>DNA, RNA & Protein Converter | Master Sequence Pipeline - GenoParse</title>
+    <meta name="description" content="The master sequence converter. Simultaneously translate DNA to RNA and compile to Protein instantly in your browser. 100% free and client-side.">
+    
+    <!-- Favicons & App Icons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+
+    <!-- Fonts: Space Grotesk & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Analytics -->
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J0KYK0PKV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J0KYK0PKV9');
+    </script>
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "name": "Rupam Das",
+          "url": "https://rupamdas.in",
+          "jobTitle": "Undergraduate Microbiology Researcher",
+          "affiliation": {
+            "@type": "Organization",
+            "name": "Department of Microbiology, Dum Dum Motijheel College",
+            "url": "https://dumdummotijheelcollege.ac.in/"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Are my DNA sequences uploaded to a server?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. The master conversion processes entirely inside your web browser using local JS memory. Your data never leaves your device."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the Central Dogma pipeline?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "This unified tool replicates the Central Dogma of molecular biology, sequentially mapping the DNA coding strand to an RNA transcript, and simultaneously translating that RNA into a polypeptide chain."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "name": "How to Convert DNA to RNA and Protein Locally",
+          "description": "A simple guide to processing the full molecular pipeline directly in your browser.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "text": "Paste your raw DNA text or FASTA sequence into the input box."
+            },
+            {
+              "@type": "HowToStep",
+              "text": "Click the 'Run Full Pipeline' button to execute the client-side compilation."
+            },
+            {
+              "@type": "HowToStep",
+              "text": "Copy the generated RNA and Protein chains from their respective output panels."
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        :root {
+            /* GenoParse Bio-Cyber Theme */
+            --bg-base: #09090b;
+            --bg-header-footer: #111114;
+            --bg-card: #18181b;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            
+            /* Unified Category Color (Molecular Violet) */
+            --theme-color: #8b5cf6; 
+            --theme-color-dim: rgba(139, 92, 246, 0.1);
+            --theme-color-hover: #7c3aed;
+            --bio-green: #00ffaa;
+            
+            --border-subtle: rgba(255, 255, 255, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar { background-color: var(--bg-header-footer); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; z-index: 100; }
+        .navbar-brand { font-size: 1.5rem; font-weight: 700; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .brand-highlight { color: var(--bio-green); }
+        .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--theme-color); }
+
+        main { flex: 1; padding: 3rem 2rem 1rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+        main > :last-child { margin-bottom: 0 !important; }
+
+        /* --- TOOL HEADER --- */
+        .tool-header { 
+            text-align: center; 
+            margin-bottom: 2.5rem; 
+        }
+        .tool-header h1 { 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 2.5rem; 
+            font-weight: 800; 
+            color: #fff; 
+            margin-bottom: 0.5rem; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            flex-wrap: wrap;
+            line-height: 1.2; 
+        }
+        .tool-header p { 
+            font-size: 1.1rem; 
+            color: var(--text-muted); 
+        }
+
+        @media (max-width: 768px) {
+            .tool-header h1 { font-size: 1.8rem; gap: 8px; }
+        }
+
+        /* --- TOOL WORKSPACE (3-Column Grid for Unified Tool) --- */
+        .workspace-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 4rem; }
+        
+        .workspace-panel { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.2rem; display: flex; flex-direction: column; }
+        .panel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 10px; }
+        .panel-title { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.95rem; color: var(--theme-color); display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
+        .panel-title i { margin-top: 3px; }
+        .char-count { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; white-space: nowrap; margin-top: 3px; }
+
+        .sequence-area { width: 100%; height: 220px; background-color: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem; color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; resize: vertical; margin-bottom: 1rem; outline: none; transition: border-color 0.3s; }
+        .sequence-area:focus { border-color: var(--theme-color); }
+        .sequence-area.output-area { color: var(--theme-color); background-color: rgba(139, 92, 246, 0.02); }
+
+        .dropzone-compact { border: 2px dashed rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 1rem; background: var(--bg-base); }
+        .dropzone-compact:hover, .dropzone-compact.dragover { border-color: var(--theme-color); background-color: var(--theme-color-dim); }
+        .dropzone-compact i { font-size: 1.2rem; color: var(--theme-color); margin-bottom: 0.5rem; }
+        .dropzone-compact p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+
+        .action-row { display: flex; gap: 0.8rem; margin-top: auto; }
+        .btn { padding: 0.6rem 1rem; border: none; border-radius: 6px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s ease; flex: 1; }
+        .btn-primary { background-color: var(--theme-color); color: #fff; }
+        .btn-primary:hover { background-color: var(--theme-color-hover); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25); }
+        .btn-outline { background-color: transparent; border: 1px solid var(--theme-color); color: var(--theme-color); }
+        .btn-outline:hover { background-color: var(--theme-color-dim); }
+
+        .privacy-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; margin: 0 auto; grid-column: 1 / -1; justify-self: center; }
+
+        /* --- CYBER PLAYER MODULE & GRID (CENTERED FLEXBOX) --- */
+        .tutorials-grid { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 2rem; 
+            width: 100%; 
+            margin-bottom: 4rem; 
+        }
+        
+        .cyber-player-module { 
+            width: 100%; 
+            max-width: 360px; 
+            flex: 1 1 300px; 
+            font-family: 'Space Grotesk', sans-serif; 
+            box-sizing: border-box; 
+            position: relative; 
+        }
+        
+        .cyber-player-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; padding: 2px; background: linear-gradient(45deg, #008899, #4A154B, #991933); box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2; }
+        .cyber-player-frame:hover { background: linear-gradient(45deg, #00E5FF, #FF2A55, #00E5FF); box-shadow: 0 15px 50px rgba(0, 229, 255, 0.4); }
+        .cyber-player-container { position: relative; width: 100%; height: 100%; background: #0B0F17; border-radius: 8px; overflow: hidden; cursor: pointer; }
+        .cyber-player-container::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; z-index: 3; pointer-events: none; opacity: 0.6; transition: opacity 0.5s ease; }
+        .cyber-thumbnail { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s ease; z-index: 1; filter: saturate(1.2) contrast(1.1); }
+        .cyber-vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(circle at center, transparent 30%, rgba(5,8,12,0.8) 100%); transition: all 0.5s ease; }
+        .cyber-player-frame:hover .cyber-thumbnail { transform: scale(1.06); filter: saturate(1.5) contrast(1.2); }
+        
+        .cyber-reticle-wrap { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 4; display: flex; justify-content: center; align-items: center; width: 60px; height: 60px; }
+        .cyber-reticle-core { position: absolute; width: 45px; height: 45px; background: rgba(0, 229, 255, 0.15); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.2); transition: all 0.4s ease; }
+        .cyber-reticle-ring-1 { position: absolute; width: 100%; height: 100%; border: 2px dashed rgba(0, 229, 255, 0.6); border-radius: 50%; animation: rotateSlow 15s linear infinite; transition: all 0.4s ease; }
+        .cyber-reticle-ring-2 { position: absolute; width: 55px; height: 55px; border: 2px dotted #FF2A55; border-radius: 50%; opacity: 0; transform: scale(0.5); animation: rotateFastOpposite 8s linear infinite reverse; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .cyber-reticle-icon { color: #F1F5F9; font-size: 18px; margin-left: 4px; text-shadow: 0 0 15px rgba(0, 229, 255, 0.8); transition: all 0.3s ease; }
+        .cyber-player-frame:hover .cyber-reticle-core { background: rgba(0, 229, 255, 0.25); box-shadow: 0 0 30px rgba(0, 229, 255, 0.5), inset 0 0 20px rgba(0, 229, 255, 0.5); border-color: #00E5FF; transform: scale(1.1); }
+        .cyber-player-frame:hover .cyber-reticle-ring-1 { border-color: #00E5FF; animation-duration: 5s; transform: scale(1.15); }
+        .cyber-player-frame:hover .cyber-reticle-ring-2 { opacity: 1; transform: scale(1.05); }
+        .cyber-player-frame:hover .cyber-reticle-icon { color: #FFFFFF; text-shadow: 0 0 20px #FFFFFF, 0 0 40px #00E5FF; transform: scale(1.1); }
+        
+        @keyframes rotateSlow { 100% { transform: rotate(360deg); } }
+        @keyframes rotateFastOpposite { 100% { transform: rotate(-360deg); } }
+        
+        .cyber-watermark, .cyber-watermark:link, .cyber-watermark:visited { position: absolute; bottom: 12px; right: 12px; z-index: 10; color: rgba(241, 245, 249, 0.7) !important; font-family: 'Space Grotesk', sans-serif; font-size: 11px; text-transform: lowercase; text-decoration: none !important; letter-spacing: 1px; background: rgba(11, 15, 23, 0.85) !important; backdrop-filter: blur(6px); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 229, 255, 0.2) !important; transition: all 0.3s ease; display: flex; align-items: center; pointer-events: auto; outline: none !important; box-shadow: none !important; }
+        .cyber-watermark:hover, .cyber-watermark:focus, .cyber-watermark:active { background: rgba(11, 15, 23, 0.95) !important; border-color: #00E5FF !important; box-shadow: 0 0 15px rgba(0, 229, 255, 0.4) !important; color: #00E5FF !important; text-decoration: none !important; outline: none !important; }
+        .cyber-copy-sym { color: #FF2A55; font-size: 14px; margin-right: 4px; transform: translateY(1px); line-height: 0; }
+        
+        .cyber-yt-action-bar { display: flex; justify-content: flex-end; margin-top: 0; padding-right: 20px; position: relative; z-index: 1; }
+        .cyber-yt-btn, .cyber-yt-btn:link, .cyber-yt-btn:visited { display: inline-flex; align-items: center; gap: 8px; background-color: #FF0000 !important; color: #FFFFFF !important; font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-decoration: none !important; text-transform: uppercase; padding: 8px 20px; border-radius: 0 0 8px 8px; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); box-shadow: 0 5px 15px rgba(255, 0, 0, 0.25) !important; outline: none !important; border: none !important; }
+        .cyber-yt-btn:hover, .cyber-yt-btn:focus, .cyber-yt-btn:active { background-color: #FF2A55 !important; color: #FFFFFF !important; text-decoration: none !important; box-shadow: 0 8px 25px rgba(255, 42, 85, 0.6) !important; border: none !important; outline: none !important; }
+        .cyber-yt-btn svg { width: 18px; height: 18px; fill: #FFFFFF; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .cyber-yt-btn:hover svg { transform: scale(1.15) rotate(360deg); }
+        
+        .cyber-iframe-wrapper { position: absolute; inset: 0; z-index: 5; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+        .cyber-iframe-wrapper iframe { width: 100%; height: 100%; border: none; }
+        .cyber-player-frame.is-playing .cyber-iframe-wrapper { opacity: 1; pointer-events: all; }
+        .cyber-player-frame.is-playing .cyber-thumbnail,
+        .cyber-player-frame.is-playing .cyber-vignette,
+        .cyber-player-frame.is-playing .cyber-reticle-wrap,
+        .cyber-player-frame.is-playing .cyber-player-container::after { opacity: 0; }
+
+        /* --- INFO GRID --- */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border-subtle); }
+        .info-card { text-align: center; }
+        .info-card i { font-size: 1.8rem; color: var(--theme-color); margin-bottom: 1rem; }
+        .info-card h3 { font-size: 1.2rem; color: #fff; margin-bottom: 0.8rem; font-weight: 600; }
+        .info-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+
+        /* --- LONG-FORM CONTENT --- */
+        .content-section { margin-bottom: 4rem; }
+        .content-block { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-left: 4px solid var(--theme-color); border-radius: 8px; padding: 2rem 2.5rem; margin-bottom: 2rem; transition: all 0.3s ease; }
+        .content-block:hover { border-color: rgba(139, 92, 246, 0.3); background-color: rgba(255, 255, 255, 0.02); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); }
+        .content-block h2 { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: #fff; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 12px; }
+        .content-block h2 i { color: var(--theme-color); font-size: 1.3rem; }
+        .content-block p { color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 1rem; }
+        .content-block p:last-child { margin-bottom: 0; }
+        
+        .step-list { list-style: none; padding: 0; margin-top: 1.5rem; }
+        .step-list li { position: relative; padding-left: 2.5rem; margin-bottom: 1.2rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+        .step-list li::before { content: "\f058"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 0; top: 2px; color: var(--theme-color); font-size: 1.2rem; }
+        .step-list strong { color: #fff; font-weight: 600; }
+
+        /* --- FAQ SECTION --- */
+        .faq-section { margin-bottom: 4rem; }
+        .faq-section h2 { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; color: #fff; margin-bottom: 2rem; text-align: center; }
+        .faq-item { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+        .faq-item h3 { font-size: 1.05rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 600; display: flex; gap: 10px; }
+        .faq-item h3 i { color: var(--theme-color); margin-top: 4px; }
+        .faq-item p { color: var(--text-muted); font-size: 0.9rem; padding-left: 1.8rem; }
+
+        /* --- FOOTER --- */
+        .footer { background-color: var(--bg-header-footer); padding: 1.25rem 2rem; border-top: 1px solid var(--border-subtle); margin-top: auto; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; }
+        .footer-links { display: flex; gap: 1.5rem; justify-content: flex-start; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--theme-color); }
+        .footer-text { color: var(--text-muted); font-size: 0.85rem; text-align: center; }
+        .footer-text a { color: var(--theme-color); text-decoration: none; }
+        .footer-social { display: flex; justify-content: flex-end; }
+
+        /* --- UNIFIED CENTRAL DOGMA ANIMATION --- */
+        .dogma-stage {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2.5rem 1.5rem;
+            background: radial-gradient(circle at center, #18181b 0%, #09090b 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.05);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .dogma-step {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid var(--theme-color);
+            border-radius: 8px;
+            flex: 1;
+            margin: 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+        }
+
+        .dogma-step h3 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dogma-step h3 i { color: var(--theme-color); }
+        
+        .dogma-sequence {
+            font-size: 0.95rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .highlight-text { color: var(--bio-green); }
+        
+        .dogma-arrow {
+            color: var(--theme-color);
+            font-size: 2rem;
+            animation: pulseArrow 2s infinite;
+        }
+
+        @keyframes pulseArrow {
+            0%, 100% { transform: translateX(0); opacity: 0.5; }
+            50% { transform: translateX(10px); opacity: 1; }
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 900px) { 
+            .workspace-grid { grid-template-columns: 1fr; } 
+            .dogma-stage { flex-direction: column; gap: 1.5rem; }
+            .dogma-arrow { transform: rotate(90deg); animation: pulseArrowDown 2s infinite; }
+            
+            @keyframes pulseArrowDown {
+                0%, 100% { transform: rotate(90deg) translateY(0); opacity: 0.5; }
+                50% { transform: rotate(90deg) translateY(10px); opacity: 1; }
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .footer-container { grid-template-columns: 1fr; text-align: center; gap: 1rem; }
+            .footer-links, .footer-social { justify-content: center; flex-wrap: wrap; }
+            .tool-header h1 { font-size: 1.8rem; }
+            .content-block { padding: 1.5rem; }
+            .cyber-player-module { max-width: 100%; } 
+            .dogma-step { width: 100%; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <i class="fa-solid fa-microscope brand-highlight"></i>
+            <span>Geno<span class="brand-highlight">Parse</span></span>
+        </a>
+        <div class="nav-links">
+            <a href="/">All Tools</a>
+            <a href="/about">About</a>
+            <a href="https://github.com/d-rupam/GenoParse" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository" style="font-size: 1.2rem;">
+                <i class="fa-brands fa-github"></i>
+            </a>
+        </div>
+    </nav>
+
+    <main>
+        
+        <!-- TOOL HEADER -->
+        <div class="tool-header">
+            <h1><i class="fa-solid fa-diagram-project" style="color: var(--theme-color);"></i> DNA, RNA & Protein Converter</h1>
+            <p>The Master Sequence Pipeline. Convert DNA to RNA to Protein simultaneously.</p>
+        </div>
+        
+        <!-- TOOL WORKSPACE (3-Column Grid) -->
+        <div class="workspace-grid">
+            <!-- Panel 1: Input DNA -->
+            <div class="workspace-panel">
+                <div class="panel-header">
+                    <div class="panel-title"><i class="fa-solid fa-terminal"></i> Input: DNA</div>
+                    <div class="char-count" id="input-count">0 bases</div>
+                </div>
+                
+                <textarea id="dna-input" class="sequence-area" placeholder="Paste your DNA Coding Strand here... (e.g., ATG GCC TAC)"></textarea>
+                
+                <div class="dropzone-compact" id="fasta-dropzone">
+                    <i class="fa-solid fa-file-arrow-up"></i>
+                    <p>Or drag & drop .fasta file</p>
+                    <input type="file" id="file-input" accept=".fasta,.txt,.fas,.fna" style="display: none;">
+                </div>
+                
+                <div class="action-row">
+                    <button class="btn btn-outline" id="btn-clear"><i class="fa-solid fa-eraser"></i> Clear</button>
+                    <button class="btn btn-primary" id="btn-run-pipeline"><i class="fa-solid fa-play"></i> Run Pipeline</button>
+                </div>
+            </div>
+
+            <!-- Panel 2: RNA Output -->
+            <div class="workspace-panel">
+                <div class="panel-header">
+                    <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Output: RNA</div>
+                    <div class="char-count" id="rna-count">0 bases</div>
+                </div>
+                
+                <textarea id="rna-output" class="sequence-area output-area" placeholder="Transcribed RNA sequence..." readonly></textarea>
+                
+                <div class="action-row">
+                    <button class="btn btn-outline" id="btn-copy-rna"><i class="fa-regular fa-copy"></i> Copy RNA</button>
+                    <button class="btn btn-outline" id="btn-dl-rna"><i class="fa-solid fa-download"></i> FASTA</button>
+                </div>
+            </div>
+
+            <!-- Panel 3: Protein Output -->
+            <div class="workspace-panel">
+                <div class="panel-header">
+                    <div class="panel-title"><i class="fa-solid fa-dna"></i> Output: Protein</div>
+                    <div class="char-count" id="protein-count">0 aa</div>
+                </div>
+                
+                <textarea id="protein-output" class="sequence-area output-area" placeholder="Translated polypeptide chain..." readonly></textarea>
+                
+                <div class="action-row">
+                    <button class="btn btn-outline" id="btn-copy-protein"><i class="fa-regular fa-copy"></i> Copy Protein</button>
+                    <button class="btn btn-outline" id="btn-dl-protein"><i class="fa-solid fa-download"></i> FASTA</button>
+                </div>
+            </div>
+            
+            <!-- Privacy Badge -->
+            <div class="privacy-badge">
+                <i class="fa-solid fa-shield-halved"></i> Data Sovereignty: Processed locally. No server uploads.
+            </div>
+        </div>
+
+        <!-- TUTORIAL SECTION (Centered Flexbox) -->
+        <div class="tutorials-grid">
+            <div class="cyber-player-module" data-video-id="YOUR_VIDEO_ID_HERE">
+                <div class="cyber-player-frame">
+                    <a href="https://rupamdas.in" class="cyber-watermark" target="_blank" rel="noopener noreferrer">
+                        <span class="cyber-copy-sym">©</span><span>rupamdas.in</span>
+                    </a>
+                    <div class="cyber-player-container" onclick="loadCyberPlayer(this)">
+                        <div class="cyber-thumbnail"></div>
+                        <div class="cyber-vignette"></div>
+                        <div class="cyber-reticle-wrap">
+                            <div class="cyber-reticle-ring-1"></div>
+                            <div class="cyber-reticle-ring-2"></div>
+                            <div class="cyber-reticle-core">
+                                <div class="cyber-reticle-icon">▶</div>
+                            </div>
+                        </div>
+                        <div class="cyber-iframe-wrapper"></div>
+                    </div>
+                </div>
+                <div class="cyber-yt-action-bar">
+                    <a href="#" class="cyber-yt-btn" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        Watch on YouTube
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- INFORMATION GRID -->
+        <div class="info-grid">
+            <div class="info-card">
+                <i class="fa-solid fa-diagram-project"></i>
+                <h3>Unified Architecture</h3>
+                <p>Calculates the entire Central Dogma pipeline in one stroke. Visualizes the intermediate RNA stage and final Protein chain side-by-side.</p>
+            </div>
+            <div class="info-card">
+                <i class="fa-solid fa-microchip"></i>
+                <h3>Concurrent Parsing</h3>
+                <p>Transcription (T to U) and Translation (Codon to Amino Acid) algorithms process sequentially in browser memory with zero network latency.</p>
+            </div>
+            <div class="info-card">
+                <i class="fa-solid fa-user-shield"></i>
+                <h3>Absolute Privacy</h3>
+                <p>Your genetic sequences remain strictly on your own hardware, guaranteeing absolute data sovereignty for sensitive biological research files.</p>
+            </div>
+        </div>
+
+        <!-- LIVE ANIMATION VISUALIZATION -->
+        <div class="content-block">
+            <h2><i class="fa-solid fa-microscope"></i> The Central Dogma Pipeline</h2>
+            <p>Observe the fundamental flow of genetic information. The framework reads the DNA Coding Strand, executes transcription to construct an RNA intermediate, and finally translates triplet codons into a functional polypeptide chain.</p>
+            
+            <div class="dogma-stage">
+                
+                <div class="dogma-step">
+                    <h3><i class="fa-solid fa-database"></i> DNA</h3>
+                    <div class="dogma-sequence">ATG GCC TAC</div>
+                </div>
+
+                <div class="dogma-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+
+                <div class="dogma-step">
+                    <h3><i class="fa-solid fa-network-wired"></i> RNA</h3>
+                    <div class="dogma-sequence highlight-text">AUG GCC UAC</div>
+                </div>
+
+                <div class="dogma-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+
+                <div class="dogma-step">
+                    <h3><i class="fa-solid fa-dna"></i> Protein</h3>
+                    <div class="dogma-sequence" style="color: #fff;">Met-Ala-Tyr</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- LONG-FORM CONTENT -->
+        <div class="content-section">
+            <div class="content-block">
+                <h2><i class="fa-solid fa-user-graduate"></i> About the Developer</h2>
+                <p>GenoParse was conceptualized and <a href="https://rupamdas.in" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">developed</a> by Rupam Das, an undergraduate Microbiology researcher blending wet-lab biology with client-side web infrastructure. This tool was <a href="https://rupamdas.in" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">engineered</a> to solve the latency and data-privacy issues found in traditional server-based bioinformatics utilities.</p>
+            </div>
+            
+            <div class="content-block">
+                <h2><i class="fa-solid fa-list-check"></i> How to Execute the Master Pipeline</h2>
+                <ul class="step-list">
+                    <li><strong>Input the DNA:</strong> Paste your DNA Coding Strand or full FASTA record into the left panel. Alternatively, drag and drop a `.fasta` file.</li>
+                    <li><strong>Sanitization:</strong> The engine will automatically strip headers and spaces, isolating only valid DNA bases.</li>
+                    <li><strong>Execute:</strong> Click "Run Pipeline". The logic instantly populates both the transcribed RNA panel and the translated Protein panel simultaneously.</li>
+                    <li><strong>Export:</strong> Use the dedicated Copy and Download buttons to extract either the RNA intermediate or the final amino acid chain.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- FAQ SECTION -->
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <h3><i class="fa-solid fa-circle-question"></i> Are my genetic sequences uploaded to a server?</h3>
+                <p>No. The entire conversion process occurs locally in your web browser. Your sequence data never leaves your device.</p>
+            </div>
+            <div class="faq-item">
+                <h3><i class="fa-solid fa-circle-question"></i> Does it recognize start and stop codons?</h3>
+                <p>Yes. The translation phase utilizes standard genetic coding tables, initiating at standard START frames and halting synthesis upon encountering standard stop codons.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- STACKED RESPONSIVE FOOTER -->
+    <footer class="footer">
+        <div class="footer-container" style="display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center;">
+            <div class="footer-links" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms & Conditions</a>
+                <a href="/dmca">DMCA Policy</a>
+                <a href="/disclaimer">Disclaimer</a>
+            </div>
+            <div class="footer-text" style="width: 100%; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+                &copy; 2026 GenoParse | Engineered by <a href="https://rupamdas.in/" target="_blank">Rupam Das</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- EXTERNAL TOOL LOGIC -->
+    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modules = document.querySelectorAll('.cyber-player-module');
+            modules.forEach(module => {
+                const videoId = module.getAttribute('data-video-id');
+                const thumbnail = module.querySelector('.cyber-thumbnail');
+                const ytButton = module.querySelector('.cyber-yt-btn');
+
+                if (videoId && videoId !== "YOUR_VIDEO_ID_HERE") {
+                    if (thumbnail) {
+                        thumbnail.style.backgroundImage = `url('https://img.youtube.com/vi/${videoId}/maxresdefault.jpg')`;
+                    }
+                    if (ytButton) {
+                        ytButton.href = `https://www.youtube.com/watch?v=${videoId}`;
+                    }
+                }
+            });
+        });
+
+        function loadCyberPlayer(element) {
+            const frame = element.closest('.cyber-player-frame');
+            if (frame.classList.contains('is-playing')) return;
+            const module = element.closest('.cyber-player-module');
+            const videoId = module.getAttribute('data-video-id');
+            const wrapper = module.querySelector('.cyber-iframe-wrapper');
+            
+            if (!videoId || videoId === "YOUR_VIDEO_ID_HERE") {
+                alert("Please add a YouTube Video ID to the data-video-id attribute.");
+                return;
+            }
+
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('allowfullscreen', '1');
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframe.setAttribute('src', `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`);
+            
+            wrapper.appendChild(iframe);
+            frame.classList.add('is-playing');
+        }
+    </script>
+</body>
+</html>
