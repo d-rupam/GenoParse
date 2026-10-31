@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputLen = dnaInput.value.replace(/\s+/g, '').length;
         const outputLen = proteinOutput.value.replace(/\s+/g, '').length;
         inputCount.textContent = `${inputLen} bases`;
-        outputCount.textContent = `${outputLen} amino acids`;
+        outputCount.textContent = `${outputLen} aa`;
     };
 
     dnaInput.addEventListener('input', updateCounts);
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return rawSeq;
     };
 
-    // Compilation Logic (DNA directly to Protein)
+    // Compilation Logic (DNA directly to Protein) - Updated for Whole Genomes
     const compileToProtein = (dnaSeq) => {
         let proteinSeq = '';
         
@@ -67,13 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let startIndex = dnaSeq.indexOf('ATG');
         if (startIndex === -1) startIndex = 0; 
 
-        // Read the DNA in triplets
+        // Read the DNA in triplets across the entire file
         for (let i = startIndex; i < dnaSeq.length - 2; i += 3) {
             let codon = dnaSeq.substring(i, i + 3);
             let aminoAcid = dnaCodonTable[codon];
             
             if (aminoAcid === '*') {
-                break; // Stop codon detected, halt compilation
+                proteinSeq += '*'; // Mark stop codon and continue translation
+                continue;
             }
             if (aminoAcid) {
                 proteinSeq += aminoAcid;
