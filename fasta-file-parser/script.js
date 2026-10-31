@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentHeader = 'GenoParse_Sequence';
     let currentCleanSequence = '';
 
-    // Core Parse Logic
+    // Ultimate Strict Sanitizer: Prevents counting \r and invisible trailing spaces
     const parseFasta = (rawText) => {
         let lines = rawText.split('\n');
         let headerLines = [];
@@ -44,10 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Determine header to use
         currentHeader = headerLines.length > 0 ? headerLines.join(' | ') : 'GenoParse_Sequence';
         
-        // Clean sequence (Remove spaces, numbers, and anything non-alphabetical)
-        // Note: For a universal parser, we keep all letters (allowing Protein FASTA too)
         let rawSeq = seqLines.join('');
-        currentCleanSequence = rawSeq.replace(/[^a-zA-Z]/g, '').toUpperCase();
+        // Aggressively strip everything except explicit uppercase/lowercase A, T, G, C
+        // We use the strict regex to prevent hidden carriage returns from inflating the count
+        currentCleanSequence = rawSeq.replace(/[^atgcATGC]/g, '').toUpperCase();
         
         // Format to 80 characters per line for display
         let formattedSeq = '';
