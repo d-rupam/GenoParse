@@ -229,15 +229,22 @@ main > :last-child { margin-bottom: 0 !important; }
         .faq-item h3 i { color: var(--theme-color); margin-top: 4px; }
         .faq-item p { color: var(--text-muted); font-size: 0.9rem; padding-left: 1.8rem; }
 /* --- CYBER PLAYER MODULE & GRID --- */
-        .tutorials-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            width: 100%;
-            margin-bottom: 4rem;
+        .tutorials-grid { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 2rem; 
+            width: 100%; 
+            margin-bottom: 4rem; 
         }
-        
-        .cyber-player-module { width: 100%; font-family: 'Space Grotesk', sans-serif; box-sizing: border-box; position: relative; }
+        .cyber-player-module { 
+            width: 100%; 
+            max-width: 360px; /* Locks it to 1/3 width so it doesn't stretch massively */
+            flex: 1 1 300px; 
+            font-family: 'Space Grotesk', sans-serif; 
+            box-sizing: border-box; 
+            position: relative; 
+        }
         .cyber-player-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; padding: 2px; background: linear-gradient(45deg, #008899, #4A154B, #991933); box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2; }
         .cyber-player-frame:hover { background: linear-gradient(45deg, #00E5FF, #FF2A55, #00E5FF); box-shadow: 0 15px 50px rgba(0, 229, 255, 0.4); }
         .cyber-player-container { position: relative; width: 100%; height: 100%; background: #0B0F17; border-radius: 8px; overflow: hidden; cursor: pointer; }
@@ -287,9 +294,8 @@ main > :last-child { margin-bottom: 0 !important; }
         .footer-text a { color: var(--theme-color); text-decoration: none; }
         .footer-social { display: flex; justify-content: flex-end; }
 
-        @media (max-width: 900px) { 
+       @media (max-width: 900px) { 
             .workspace-grid { grid-template-columns: 1fr; } 
-            .tutorials-grid { grid-template-columns: repeat(2, 1fr); }
         }
         
         @media (max-width: 768px) {
@@ -298,7 +304,14 @@ main > :last-child { margin-bottom: 0 !important; }
             .tool-header h1 { font-size: 1.8rem; }
             .content-block { padding: 1.5rem; }
             
-            .tutorials-grid { grid-template-columns: 1fr; }
+            /* Lets the video stretch full width on tiny mobile screens */
+            .cyber-player-module { max-width: 100%; } 
+            
+            .mrna-sequence, .dna-sequence { font-size: 12px; gap: 10px; }
+            .rt-base { font-size: 14px; width: 15px; }
+            .cdna-bases { gap: 15px; }
+            .rt-label { font-size: 12px; width: 30px; }
+        }
             
             /* Animation scaling for mobile */
             .base { font-size: 14px; width: 15px; }
