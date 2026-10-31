@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenoParse | Client-Side Biological Compilation Engine</title>
+    <style>
+        /* CSS Variables & Reset */
+        :root {
+            --bg-base: #0d1117;
+            --bg-surface: #161b22;
+            --border-muted: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-green: #00ffaa;
+            --accent-blue: #3b82f6;
+            --font-ui: system-ui, -apple-system, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        nav {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 17, 23, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        .brand span { color: var(--accent-green); }
+
+        /* Hero & DNA Animation */
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem;
+            position: relative;
+        }
+
+        .dna-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 0 4rem 0;
+        }
+
+        ._dt-sys-x9 {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 750px;
+            margin: 0 auto;
+            transform: rotate(-15deg);
+        }
+        
+        ._dx-node { width: 2px; height: 60px; background: var(--border-muted); position: relative; animation: _zx_rt 3s linear infinite; transform-style: preserve-3d; }
+        ._dx-node::before, ._dx-node::after { content: ''; position: absolute; width: 12px; height: 12px; border-radius: 50%; left: -5px; }
+        ._dx-node::before { top: -6px; background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        ._dx-node::after { bottom: -6px; background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
+        ._dx-node:nth-child(4n+2):before { background: #ff6b6b; box-shadow: 0 0 8px #ff6b6b; }
+        ._dx-node:nth-child(4n+2):after { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+        ._dx-node:nth-child(4n+3):before { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
+        ._dx-node:nth-child(4n+3):after { background: #3fb950; box-shadow: 0 0 8px #3fb950; }
+        ._dx-node:nth-child(4n+4):before { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+        ._dx-node:nth-child(4n+4):after { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        
+        /* DNA Animation Delays (1-40) */
+        ._dx-node:nth-child(1){animation-delay:0s;}._dx-node:nth-child(2){animation-delay:-0.15s;}._dx-node:nth-child(3){animation-delay:-0.3s;}._dx-node:nth-child(4){animation-delay:-0.45s;}._dx-node:nth-child(5){animation-delay:-0.6s;}._dx-node:nth-child(6){animation-delay:-0.75s;}._dx-node:nth-child(7){animation-delay:-0.9s;}._dx-node:nth-child(8){animation-delay:-1.05s;}._dx-node:nth-child(9){animation-delay:-1.2s;}._dx-node:nth-child(10){animation-delay:-1.35s;}._dx-node:nth-child(11){animation-delay:-1.5s;}._dx-node:nth-child(12){animation-delay:-1.65s;}._dx-node:nth-child(13){animation-delay:-1.8s;}._dx-node:nth-child(14){animation-delay:-1.95s;}._dx-node:nth-child(15){animation-delay:-2.1s;}._dx-node:nth-child(16){animation-delay:-2.25s;}._dx-node:nth-child(17){animation-delay:-2.4s;}._dx-node:nth-child(18){animation-delay:-2.55s;}._dx-node:nth-child(19){animation-delay:-2.7s;}._dx-node:nth-child(20){animation-delay:-2.85s;}._dx-node:nth-child(21){animation-delay:-3s;}._dx-node:nth-child(22){animation-delay:-3.15s;}._dx-node:nth-child(23){animation-delay:-3.3s;}._dx-node:nth-child(24){animation-delay:-3.45s;}._dx-node:nth-child(25){animation-delay:-3.6s;}._dx-node:nth-child(26){animation-delay:-3.75s;}._dx-node:nth-child(27){animation-delay:-3.9s;}._dx-node:nth-child(28){animation-delay:-4.05s;}._dx-node:nth-child(29){animation-delay:-4.2s;}._dx-node:nth-child(30){animation-delay:-4.35s;}._dx-node:nth-child(31){animation-delay:-4.5s;}._dx-node:nth-child(32){animation-delay:-4.65s;}._dx-node:nth-child(33){animation-delay:-4.8s;}._dx-node:nth-child(34){animation-delay:-4.95s;}._dx-node:nth-child(35){animation-delay:-5.1s;}._dx-node:nth-child(36){animation-delay:-5.25s;}._dx-node:nth-child(37){animation-delay:-5.4s;}._dx-node:nth-child(38){animation-delay:-5.55s;}._dx-node:nth-child(39){animation-delay:-5.7s;}._dx-node:nth-child(40){animation-delay:-5.85s;}
+        
+        @keyframes _zx_rt { 0% { transform: rotateX(0deg); } 100% { transform: rotateX(360deg); } }
+
+        .hero h1 { font-size: 3rem; color: #fff; margin-bottom: 1rem; }
+        .hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem auto; }
+        
+        .btn-launch {
+            display: inline-block;
+            background: var(--text-main);
+            color: var(--bg-base);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-launch:hover { background: #fff; transform: translateY(-2px); }
+
+        /* Container */
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+
+        /* Why GenoParse */
+        .section-title { font-size: 1.5rem; color: #fff; border-bottom: 1px solid var(--border-muted); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        .philosophy-box { background: var(--bg-surface); border: 1px solid var(--border-muted); border-radius: 8px; padding: 2rem; margin-bottom: 3rem; }
+        .philosophy-box h3 { color: var(--accent-green); margin-bottom: 1rem; font-family: var(--font-mono); }
+
+        /* Tools Grid */
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
+        .tool-card { background: var(--bg-surface); border: 1px solid var(--border-muted); border-radius: 8px; padding: 1.5rem; transition: border-color 0.2s; display: flex; flex-direction: column; }
+        .tool-card:hover { border-color: var(--accent-blue); }
+        .tool-title { font-size: 1.1rem; color: #fff; font-weight: 600; margin-bottom: 0.5rem; }
+        .tool-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; flex-grow: 1; }
+        .tool-link { color: var(--accent-blue); text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        .tool-link:hover { text-decoration: underline; }
+
+        /* Footer */
+        footer { border-top: 1px solid var(--border-muted); padding: 3rem 2rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); background: var(--bg-surface); }
+        .footer-links { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent-green); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.25rem; }
+            ._dt-sys-x9 { transform: rotate(-10deg) scale(0.85); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">Geno<span>Parse</span></div>
+        <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">
+            > init system
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="dna-wrapper">
+            <div class="_dt-sys-x9">
+                <div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div>
+                <div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div>
+                <div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div>
+                <div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div>
+                <div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div>
+                <div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div>
+                <div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div>
+                <div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div><div class="_dx-node"></div>
+            </div>
+        </div>
+        <h1>Biological Compilation Engine</h1>
+        <p>A serverless computational logic hub for multi-directional genetic sequence translation. Zero server latency. Absolute data sovereignty.</p>
+        <button class="btn-launch" onclick="document.getElementById('modules').scrollIntoView({behavior: 'smooth'})">Initialize Modules</button>
+    </header>
+
+    <main class="container">
+        
+        <section class="philosophy-box">
+            <h3>> ./why-genoparse</h3>
+            <p style="margin-bottom: 1rem;">In software engineering, <strong>parsing</strong> is the computational command for taking raw, unstructured strings and formatting them into functional arrays. GenoParse directly fuses this computer science architecture with nucleotide biology.</p>
+            <p>Instead of routing sensitive genomic data to a backend server, GenoParse operates as a strict client-side engine. It ingests unsequenced FASTA files and compiles DNA, RNA, and Protein translations securely within your local browser memory. It is built to bridge wet-lab theory with unyielding digital privacy.</p>
+        </section>
+
+        <h2 class="section-title" id="modules">Active Modules</h2>
+        
+        <section class="tools-grid">
+            <!-- Tool 1 -->
+            <div class="tool-card">
+                <div class="tool-title">The Master Sequence (Unified)</div>
+                <div class="tool-desc">Paste raw base pairs to instantly generate corresponding RNA transcripts and Poly-peptide chains in a single, unbroken workflow.</div>
+                <a href="#translator" class="tool-link" onclick="alert('Translator module mounting soon.')">Launch Compiler &rarr;</a>
+            </div>
+
+            <!-- Tool 2 -->
+            <div class="tool-card">
+                <div class="tool-title">Reverse Transcriptase</div>
+                <div class="tool-desc">Input an RNA sequence to reverse-compile the exact foundational DNA scaffold. Strictly handles U-to-T base flipping.</div>
+                <a href="#reverse" class="tool-link" onclick="alert('Reverse Transcriptase module mounting soon.')">Launch Module &rarr;</a>
+            </div>
+
+            <!-- Tool 3 -->
+            <div class="tool-card">
+                <div class="tool-title">FASTA Substrate Parser</div>
+                <div class="tool-desc">Upload heavy `.fasta` or `.fastp` files. The local engine automatically sanitizes headers, strips integers, and exports pure coding sequences.</div>
+                <a href="#fasta" class="tool-link" onclick="alert('FASTA Parser module mounting soon.')">Launch Parser &rarr;</a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="/terms">Terms & Conditions</a>
+            <a href="/disclaimer">Disclaimer</a>
+            <a href="/dmca">DMCA</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+        </div>
+        <p>&copy; 2026 Rupam Das. Built with discipline. Sovereign execution only.</p>
+    </footer>
+
+    <script>
+        // Foundational JavaScript payload for future tool integrations.
+        console.log("%c[GenoParse] Initialization Complete.", "color: #00ffaa; font-weight: bold;");
+        console.log("%cData Sovereignty Protocol: Active.", "color: #3b82f6;");
+    </script>
+</body>
+</html>
