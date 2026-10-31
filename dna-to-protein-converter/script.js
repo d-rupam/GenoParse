@@ -46,16 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dnaInput.addEventListener('input', updateCounts);
 
-    // CoreFASTA Parser & Sanitizer (Filters only A, T, G, C)
+// Ultimate Strict Sanitizer: Strips headers, spaces, line breaks, and non-DNA chars entirely
     const cleanDNASequence = (rawText) => {
         let lines = rawText.split('\n');
-        // Filter out FASTA headers (lines starting with '>')
         let sequenceLines = lines.filter(line => !line.trim().startsWith('>'));
         let rawSeq = sequenceLines.join('');
         
-        // Remove spaces, numbers, and anything that isn't A, T, G, or C
-        rawSeq = rawSeq.replace(/[^AaTtGgCc]/g, '').toUpperCase();
-        return rawSeq;
+        // Aggressively strip everything except explicit uppercase/lowercase A, T, G, C
+        return rawSeq.replace(/[^atgcATGC]/g, '').toUpperCase();
     };
 
     // Compilation Logic (DNA directly to Protein) - Updated for Whole Genomes
