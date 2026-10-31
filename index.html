@@ -297,14 +297,13 @@
        
 /* --- FOOTER --- */
         .footer { background-color: var(--bg-header-footer); padding: 1.25rem 2rem; border-top: 1px solid var(--border-subtle); margin-top: auto; }
-        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; }
-        .footer-links { display: flex; gap: 1.5rem; justify-content: flex-start; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
+        .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
         .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
         .footer-links a:hover { color: var(--theme-color); }
-        .footer-text { color: var(--text-muted); font-size: 0.85rem; text-align: center; }
+        .footer-text { color: var(--text-muted); font-size: 0.85rem; width: 100%; border-top: 1px solid var(--border-subtle); padding-top: 1rem; }
         .footer-text a { color: var(--theme-color); text-decoration: none; }
-        .footer-social { display: flex; justify-content: flex-end; }
-
+        
         /* --- MOBILE RESPONSIVE --- */
         @media (max-width: 768px) { 
             main { padding: 1.5rem 1rem; }
@@ -438,7 +437,7 @@
 
     </main>
 
-  <!-- RESPONSIVE FOOTER -->
+ <!-- STACKED RESPONSIVE FOOTER -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-links">
@@ -452,10 +451,8 @@
             <div class="footer-text">
                 &copy; 2026 GenoParse | Engineered by <a href="https://rupamdas.in/" target="_blank">Rupam Das</a>
             </div>
-            <div class="footer-social"></div>
         </div>
     </footer>
-
 
 </body>
 </html>
