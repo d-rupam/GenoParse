@@ -50,7 +50,7 @@
             "url": "https://dumdummotijheelcollege.ac.in/"
           }
         },
-        {
+       {
           "@type": "FAQPage",
           "mainEntity": [
             {
@@ -68,9 +68,33 @@
                 "@type": "Answer",
                 "text": "This unified tool replicates the Central Dogma of molecular biology, sequentially mapping the DNA coding strand to an RNA transcript, and simultaneously translating that RNA into a polypeptide chain."
               }
+            },
+            {
+              "@type": "Question",
+              "name": "What do the asterisks (*) mean in the protein output?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Asterisks (*) represent Stop Codons (UAA, UAG, or UGA). Instead of halting the translation completely, the algorithm uses an asterisk to mark the termination site of a protein chain and continues reading the sequence."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does the tool separate multiple proteins in a long genome?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "For large FASTA files containing multiple genes, the output uses the asterisks (*) as visual dividers. Every continuous block of text between two asterisks represents a distinct polypeptide chain or Open Reading Frame (ORF) mapped from the genome."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does the tool automatically detect start codons?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. The translation algorithm scans for the first standard start codon (AUG). If found, synthesis begins there. If no start codon is present, it defaults to translating from the very first base (Frame 1)."
+              }
             }
           ]
-        },
+        }
         {
           "@type": "HowTo",
           "name": "How to Convert DNA to RNA and Protein Locally",
@@ -588,7 +612,7 @@
             </div>
         </div>
 
-        <!-- FAQ SECTION -->
+       <!-- FAQ SECTION -->
         <div class="faq-section">
             <h2>Frequently Asked Questions</h2>
             <div class="faq-item">
@@ -596,12 +620,16 @@
                 <p>No. The entire conversion process occurs locally in your web browser. Your sequence data never leaves your device.</p>
             </div>
             <div class="faq-item">
-                <h3><i class="fa-solid fa-circle-question"></i> Does it recognize start and stop codons?</h3>
-                <p>Yes. The translation phase utilizes standard genetic coding tables, initiating at standard START frames and halting synthesis upon encountering standard stop codons.</p>
+                <h3><i class="fa-solid fa-circle-question"></i> What do the asterisks (*) mean in the protein output?</h3>
+                <p>Asterisks (*) represent <strong>Stop Codons</strong> (UAA, UAG, or UGA). Instead of halting the translation completely, the algorithm uses an asterisk to mark the termination site of a protein chain and continues reading the sequence.</p>
             </div>
             <div class="faq-item">
-                <h3><i class="fa-solid fa-circle-question"></i> Does it recognize start and stop codons?</h3>
-                <p>Yes. The translation phase utilizes standard genetic coding tables, initiating at standard START frames and marking standard stop codons throughout the sequence.</p>
+                <h3><i class="fa-solid fa-circle-question"></i> How does the tool separate multiple proteins in a long genome?</h3>
+                <p>For large FASTA files containing multiple genes, the output uses the asterisks (*) as visual dividers. Every continuous block of text between two asterisks represents a distinct polypeptide chain or Open Reading Frame (ORF) mapped from the genome.</p>
+            </div>
+            <div class="faq-item">
+                <h3><i class="fa-solid fa-circle-question"></i> Does the tool automatically detect start codons?</h3>
+                <p>Yes. The translation algorithm scans for the first standard start codon (AUG). If found, synthesis begins there. If no start codon is present, it defaults to translating from the very first base (Frame 1).</p>
             </div>
         </div>
 
