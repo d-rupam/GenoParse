@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Optimized Title & Meta Description -->
+    <title>FASTA File Parser | Sequence Sanitizer & Formatter - GenoParse</title>
+    <meta name="description" content="Upload and parse raw FASTA files locally. Automatically clean headers, sanitize sequences, calculate GC content, and format biological data securely in your browser.">
+    
+    <!-- Favicons & App Icons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+
+    <!-- Fonts: Space Grotesk & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Analytics -->
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J0KYK0PKV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J0KYK0PKV9');
+    </script>
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "name": "Rupam Das",
+          "url": "https://rupamdas.in",
+          "jobTitle": "Undergraduate Microbiology Researcher",
+          "affiliation": {
+            "@type": "Organization",
+            "name": "Department of Microbiology, Dum Dum Motijheel College",
+            "url": "https://dumdummotijheelcollege.ac.in/"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Are my sequence files uploaded to a server?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. The FASTA parsing engine runs entirely inside your web browser using local javascript algorithms. Your data never leaves your device."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What exactly does this parser do?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "It isolates the metadata headers from the biological sequence, removes spaces and numbers, formats the sequence into uniform blocks, and calculates basic metrics like GC content."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        :root {
+            /* GenoParse Bio-Cyber Theme */
+            --bg-base: #09090b;
+            --bg-header-footer: #111114;
+            --bg-card: #18181b;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            
+            /* Unified Category Color (Molecular Violet) */
+            --theme-color: #8b5cf6; 
+            --theme-color-dim: rgba(139, 92, 246, 0.1);
+            --theme-color-hover: #7c3aed;
+            --bio-green: #00ffaa;
+            
+            --border-subtle: rgba(255, 255, 255, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar { background-color: var(--bg-header-footer); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; z-index: 100; }
+        .navbar-brand { font-size: 1.5rem; font-weight: 700; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .brand-highlight { color: var(--bio-green); }
+        .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--theme-color); }
+
+        main { flex: 1; padding: 3rem 2rem 1rem 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+        main > :last-child { margin-bottom: 0 !important; }
+
+        /* --- TOOL HEADER --- */
+        .tool-header { text-align: center; margin-bottom: 2.5rem; }
+        .tool-header h1 { font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; display: inline-flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; line-height: 1.2; }
+        .tool-header p { font-size: 1.1rem; color: var(--text-muted); }
+
+        @media (max-width: 768px) { .tool-header h1 { font-size: 1.8rem; gap: 8px; } }
+
+        /* --- TOOL WORKSPACE (2-Column Grid) --- */
+        .workspace-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        
+        .workspace-panel { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; }
+        .panel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 10px; }
+        .panel-title { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1rem; color: var(--theme-color); display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
+        .panel-title i { margin-top: 3px; }
+        
+        .sequence-area { width: 100%; height: 250px; background-color: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem; color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; resize: vertical; margin-bottom: 1rem; outline: none; transition: border-color 0.3s; white-space: pre-wrap; word-break: break-all; }
+        .sequence-area:focus { border-color: var(--theme-color); }
+        .sequence-area.output-area { color: var(--theme-color); background-color: rgba(139, 92, 246, 0.02); }
+
+        .dropzone-compact { border: 2px dashed rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 1rem; background: var(--bg-base); }
+        .dropzone-compact:hover, .dropzone-compact.dragover { border-color: var(--theme-color); background-color: var(--theme-color-dim); }
+        .dropzone-compact i { font-size: 1.5rem; color: var(--theme-color); margin-bottom: 0.5rem; }
+        .dropzone-compact p { font-size: 0.9rem; color: var(--text-muted); margin: 0; }
+
+        .action-row { display: flex; gap: 1rem; margin-top: auto; }
+        .btn { padding: 0.75rem 1.25rem; border: none; border-radius: 6px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; flex: 1; }
+        .btn-primary { background-color: var(--theme-color); color: #fff; }
+        .btn-primary:hover { background-color: var(--theme-color-hover); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25); }
+        .btn-outline { background-color: transparent; border: 1px solid var(--theme-color); color: var(--theme-color); }
+        .btn-outline:hover { background-color: var(--theme-color-dim); }
+
+        /* Metrics Bar (New for Parser) */
+        .metrics-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .metric-box { background: var(--bg-base); border: 1px solid var(--border-subtle); padding: 0.8rem; border-radius: 8px; text-align: center; }
+        .metric-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; }
+        .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; color: #fff; margin-top: 4px; }
+        
+        .header-box { background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 0.8rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; word-break: break-all; min-height: 44px; }
+        .header-box span { color: var(--theme-color); font-weight: 700; }
+
+        .privacy-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; margin: 0 auto 4rem auto; justify-self: center; }
+
+        /* --- CYBER PLAYER MODULE & GRID (FLEXBOX) --- */
+        .tutorials-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; width: 100%; margin-bottom: 4rem; }
+        .cyber-player-module { width: 100%; max-width: 360px; flex: 1 1 300px; font-family: 'Space Grotesk', sans-serif; box-sizing: border-box; position: relative; }
+        .cyber-player-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; padding: 2px; background: linear-gradient(45deg, #008899, #4A154B, #991933); box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2; }
+        .cyber-player-frame:hover { background: linear-gradient(45deg, #00E5FF, #FF2A55, #00E5FF); box-shadow: 0 15px 50px rgba(0, 229, 255, 0.4); }
+        .cyber-player-container { position: relative; width: 100%; height: 100%; background: #0B0F17; border-radius: 8px; overflow: hidden; cursor: pointer; }
+        .cyber-player-container::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; z-index: 3; pointer-events: none; opacity: 0.6; transition: opacity 0.5s ease; }
+        .cyber-thumbnail { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s ease; z-index: 1; filter: saturate(1.2) contrast(1.1); }
+        .cyber-vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(circle at center, transparent 30%, rgba(5,8,12,0.8) 100%); transition: all 0.5s ease; }
+        .cyber-player-frame:hover .cyber-thumbnail { transform: scale(1.06); filter: saturate(1.5) contrast(1.2); }
+        .cyber-reticle-wrap { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 4; display: flex; justify-content: center; align-items: center; width: 60px; height: 60px; }
+        .cyber-reticle-core { position: absolute; width: 45px; height: 45px; background: rgba(0, 229, 255, 0.15); backdrop-filter: blur(8px); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.2); transition: all 0.4s ease; }
+        .cyber-reticle-ring-1 { position: absolute; width: 100%; height: 100%; border: 2px dashed rgba(0, 229, 255, 0.6); border-radius: 50%; animation: rotateSlow 15s linear infinite; transition: all 0.4s ease; }
+        .cyber-reticle-ring-2 { position: absolute; width: 55px; height: 55px; border: 2px dotted #FF2A55; border-radius: 50%; opacity: 0; transform: scale(0.5); animation: rotateFastOpposite 8s linear infinite reverse; transition: all 0.4s ease; }
+        .cyber-reticle-icon { color: #F1F5F9; font-size: 18px; margin-left: 4px; text-shadow: 0 0 15px rgba(0, 229, 255, 0.8); transition: all 0.3s ease; }
+        .cyber-player-frame:hover .cyber-reticle-core { background: rgba(0, 229, 255, 0.25); box-shadow: 0 0 30px rgba(0, 229, 255, 0.5), inset 0 0 20px rgba(0, 229, 255, 0.5); border-color: #00E5FF; transform: scale(1.1); }
+        @keyframes rotateSlow { 100% { transform: rotate(360deg); } }
+        @keyframes rotateFastOpposite { 100% { transform: rotate(-360deg); } }
+        .cyber-watermark { position: absolute; bottom: 12px; right: 12px; z-index: 10; color: rgba(241, 245, 249, 0.7) !important; font-family: 'Space Grotesk', sans-serif; font-size: 11px; text-transform: lowercase; text-decoration: none !important; letter-spacing: 1px; background: rgba(11, 15, 23, 0.85) !important; backdrop-filter: blur(6px); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 229, 255, 0.2) !important; display: flex; align-items: center; }
+        .cyber-copy-sym { color: #FF2A55; font-size: 14px; margin-right: 4px; transform: translateY(1px); line-height: 0; }
+        .cyber-yt-action-bar { display: flex; justify-content: flex-end; padding-right: 20px; position: relative; z-index: 1; }
+        .cyber-yt-btn { display: inline-flex; align-items: center; gap: 8px; background-color: #FF0000 !important; color: #FFFFFF !important; font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-decoration: none !important; text-transform: uppercase; padding: 8px 20px; border-radius: 0 0 8px 8px; transition: all 0.3s ease; }
+        .cyber-yt-btn svg { width: 18px; height: 18px; fill: #FFFFFF; }
+        .cyber-iframe-wrapper { position: absolute; inset: 0; z-index: 5; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+        .cyber-iframe-wrapper iframe { width: 100%; height: 100%; border: none; }
+        .cyber-player-frame.is-playing .cyber-iframe-wrapper { opacity: 1; pointer-events: all; }
+
+        /* --- INFO GRID --- */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border-subtle); }
+        .info-card { text-align: center; }
+        .info-card i { font-size: 1.8rem; color: var(--theme-color); margin-bottom: 1rem; }
+        .info-card h3 { font-size: 1.2rem; color: #fff; margin-bottom: 0.8rem; font-weight: 600; }
+        .info-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+
+        /* --- LONG-FORM CONTENT --- */
+        .content-section { margin-bottom: 4rem; }
+        .content-block { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-left: 4px solid var(--theme-color); border-radius: 8px; padding: 2rem 2.5rem; margin-bottom: 2rem; transition: all 0.3s ease; }
+        .content-block h2 { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: #fff; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 12px; }
+        .content-block h2 i { color: var(--theme-color); font-size: 1.3rem; }
+        .content-block p { color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 1rem; }
+        .step-list { list-style: none; padding: 0; margin-top: 1.5rem; }
+        .step-list li { position: relative; padding-left: 2.5rem; margin-bottom: 1.2rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+        .step-list li::before { content: "\f058"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 0; top: 2px; color: var(--theme-color); font-size: 1.2rem; }
+        .step-list strong { color: #fff; font-weight: 600; }
+
+        /* --- FAQ SECTION --- */
+        .faq-section { margin-bottom: 4rem; }
+        .faq-section h2 { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; color: #fff; margin-bottom: 2rem; text-align: center; }
+        .faq-item { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+        .faq-item h3 { font-size: 1.05rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 600; display: flex; gap: 10px; }
+        .faq-item h3 i { color: var(--theme-color); margin-top: 4px; }
+        .faq-item p { color: var(--text-muted); font-size: 0.9rem; padding-left: 1.8rem; }
+
+        /* --- FOOTER --- */
+        .footer { background-color: var(--bg-header-footer); padding: 1.25rem 2rem; border-top: 1px solid var(--border-subtle); margin-top: auto; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; }
+        .footer-links { display: flex; gap: 1.5rem; justify-content: flex-start; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--theme-color); }
+        .footer-text { color: var(--text-muted); font-size: 0.85rem; text-align: center; }
+        .footer-text a { color: var(--theme-color); text-decoration: none; }
+        .footer-social { display: flex; justify-content: flex-end; }
+
+        /* --- PARSER ANIMATION VISUALIZATION --- */
+        .parser-stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+            background: radial-gradient(circle at center, #18181b 0%, #09090b 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.05);
+            font-family: 'JetBrains Mono', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .raw-doc {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-subtle);
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 280px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .raw-text { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; white-space: pre; }
+        
+        .scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--bio-green);
+            box-shadow: 0 0 15px var(--bio-green);
+            animation: scanDoc 3s linear infinite;
+            z-index: 10;
+        }
+
+        .parsed-data { display: flex; flex-direction: column; gap: 1rem; margin-left: 3rem; }
+        
+        .parsed-box {
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid var(--theme-color);
+            padding: 1rem;
+            border-radius: 8px;
+            width: 200px;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: popIn 3s linear infinite;
+        }
+
+        .parsed-box h4 { color: var(--theme-color); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; }
+        .parsed-box p { color: #fff; font-size: 0.8rem; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+
+        .box-header { animation-delay: 0.5s; }
+        .box-seq { animation-delay: 1.5s; }
+
+        @keyframes scanDoc {
+            0% { top: 10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { top: 90%; opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        @keyframes popIn {
+            0%, 20% { opacity: 0; transform: translateX(-20px); }
+            30%, 80% { opacity: 1; transform: translateX(0); }
+            90%, 100% { opacity: 0; transform: translateX(10px); }
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 900px) { 
+            .workspace-grid { grid-template-columns: 1fr; } 
+            .parser-stage { flex-direction: column; gap: 2rem; }
+            .parsed-data { margin-left: 0; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        }
+        
+        @media (max-width: 768px) {
+            .footer-container { grid-template-columns: 1fr; text-align: center; gap: 1rem; }
+            .footer-links, .footer-social { justify-content: center; flex-wrap: wrap; }
+            .tool-header h1 { font-size: 1.8rem; }
+            .content-block { padding: 1.5rem; }
+            .cyber-player-module { max-width: 100%; } 
+            .metrics-bar { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <i class="fa-solid fa-microscope brand-highlight"></i>
+            <span>Geno<span class="brand-highlight">Parse</span></span>
+        </a>
+        <div class="nav-links">
+            <a href="/">All Tools</a>
+            <a href="/about">About</a>
+            <a href="https://github.com/d-rupam/GenoParse" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository" style="font-size: 1.2rem;">
+                <i class="fa-brands fa-github"></i>
+            </a>
+        </div>
+    </nav>
+
+    <main>
+        
+        <!-- TOOL HEADER -->
+        <div class="tool-header">
+            <h1><i class="fa-solid fa-file-code" style="color: var(--theme-color);"></i> FASTA File Parser</h1>
+            <p>Upload raw FASTA files, clean headers, analyze metrics, format sequences, and download.</p>
+        </div>
+        
+        <!-- TOOL WORKSPACE (2-Column Grid) -->
+        <div class="workspace-grid">
+            <!-- Input Panel -->
+            <div class="workspace-panel">
+                <div class="panel-header">
+                    <div class="panel-title"><i class="fa-solid fa-terminal"></i> Input: Raw FASTA / Text</div>
+                </div>
+                
+                <textarea id="fasta-input" class="sequence-area" placeholder="Paste your raw FASTA text here...
+>Sequence_Name_001
+ATGCGTA..."></textarea>
+                
+                <div class="dropzone-compact" id="fasta-dropzone">
+                    <i class="fa-solid fa-file-arrow-up"></i>
+                    <p>Or drag & drop a .fasta / .txt file here</p>
+                    <input type="file" id="file-input" accept=".fasta,.txt,.fas,.fna" style="display: none;">
+                </div>
+                
+                <div class="action-row">
+                    <button class="btn btn-outline" id="btn-clear"><i class="fa-solid fa-eraser"></i> Clear</button>
+                    <button class="btn btn-primary" id="btn-parse"><i class="fa-solid fa-microchip"></i> Parse Sequence</button>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="workspace-panel">
+                <div class="panel-header">
+                    <div class="panel-title"><i class="fa-solid fa-align-left"></i> Output: Cleaned Format</div>
+                </div>
+                
+                <div class="header-box" id="header-output"><span>Metadata:</span> Awaiting input...</div>
+                
+                <div class="metrics-bar">
+                    <div class="metric-box">
+                        <div class="metric-label">Sequence Length</div>
+                        <div class="metric-value" id="length-count">0 bp</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">GC Content</div>
+                        <div class="metric-value" id="gc-content">0.0%</div>
+                    </div>
+                </div>
+                
+                <!-- Slightly shorter sequence area to accommodate metrics above -->
+                <textarea id="sequence-output" class="sequence-area output-area" style="height: 145px;" placeholder="Formatted sequence will appear here (80 characters per line)..." readonly></textarea>
+                
+                <div class="action-row">
+                    <button class="btn btn-outline" id="btn-copy"><i class="fa-regular fa-copy"></i> Copy Text</button>
+                    <button class="btn btn-primary" id="btn-download"><i class="fa-solid fa-download"></i> Download Clean FASTA</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Privacy Badge -->
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <div class="privacy-badge">
+                <i class="fa-solid fa-shield-halved"></i> Data Sovereignty: Processed locally. No server uploads.
+            </div>
+        </div>
+
+        <!-- TUTORIAL SECTION (Centered Flexbox) -->
+        <div class="tutorials-grid">
+            <div class="cyber-player-module" data-video-id="YOUR_VIDEO_ID_HERE">
+                <div class="cyber-player-frame">
+                    <a href="https://rupamdas.in" class="cyber-watermark" target="_blank" rel="noopener noreferrer">
+                        <span class="cyber-copy-sym">©</span><span>rupamdas.in</span>
+                    </a>
+                    <div class="cyber-player-container" onclick="loadCyberPlayer(this)">
+                        <div class="cyber-thumbnail"></div>
+                        <div class="cyber-vignette"></div>
+                        <div class="cyber-reticle-wrap">
+                            <div class="cyber-reticle-ring-1"></div>
+                            <div class="cyber-reticle-ring-2"></div>
+                            <div class="cyber-reticle-core">
+                                <div class="cyber-reticle-icon">▶</div>
+                            </div>
+                        </div>
+                        <div class="cyber-iframe-wrapper"></div>
+                    </div>
+                </div>
+                <div class="cyber-yt-action-bar">
+                    <a href="#" class="cyber-yt-btn" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        Watch on YouTube
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- INFORMATION GRID -->
+        <div class="info-grid">
+            <div class="info-card">
+                <i class="fa-solid fa-heading"></i>
+                <h3>Metadata Extraction</h3>
+                <p>Intelligently isolates your FASTA header block (`>`) from the core string, preserving metadata without disrupting sequence logic.</p>
+            </div>
+            <div class="info-card">
+                <i class="fa-solid fa-chart-pie"></i>
+                <h3>Instant Analytics</h3>
+                <p>Automatically calculates sequence length and detects GC content (Guanine-Cytosine percentage) dynamically if processing DNA/RNA.</p>
+            </div>
+            <div class="info-card">
+                <i class="fa-solid fa-align-justify"></i>
+                <h3>Strict Formatting</h3>
+                <p>Removes all whitespaces and digits, outputting the sequence in standard bioinformatics blocks of exactly 80 characters per line.</p>
+            </div>
+        </div>
+
+        <!-- LIVE ANIMATION VISUALIZATION -->
+        <div class="content-block">
+            <h2><i class="fa-solid fa-microscope"></i> How the Parser Operates</h2>
+            <p>Bioinformatics tools require pristine data to function. The GenoParse engine acts as a digital sieve—scanning the raw document, isolating the descriptive header line, and stripping out messy formatting to yield pure biological arrays.</p>
+            
+            <div class="parser-stage">
+                
+                <div class="raw-doc">
+                    <div class="scan-line"></div>
+                    <div class="raw-text"><span style="color:var(--bio-green);">>NC_000001.11 Homo Sapiens</span><br><br>ATGC GTA CGG TAC <br>GGC 124 55 <br>TA GCA <br>T T A C</div>
+                </div>
+
+                <div class="parsed-data">
+                    <div class="parsed-box box-header">
+                        <h4>Header Found</h4>
+                        <p>NC_000001.11 Homo Sapiens</p>
+                    </div>
+                    <div class="parsed-box box-seq">
+                        <h4>Clean Sequence</h4>
+                        <p>ATGCGTACGGTACGGC...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- LONG-FORM CONTENT -->
+        <div class="content-section">
+            <div class="content-block">
+                <h2><i class="fa-solid fa-user-graduate"></i> About the Developer</h2>
+                <p>GenoParse was conceptualized and <a href="https://rupamdas.in" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">developed</a> by Rupam Das, an undergraduate Microbiology researcher blending wet-lab biology with client-side web infrastructure. This tool was <a href="https://rupamdas.in" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">engineered</a> to solve the latency and data-privacy issues found in traditional server-based bioinformatics utilities.</p>
+            </div>
+            
+            <div class="content-block">
+                <h2><i class="fa-solid fa-list-check"></i> Standardized Formatting Rules</h2>
+                <ul class="step-list">
+                    <li><strong>FASTA Recognition:</strong> The tool scans for the standard `>` character to identify and store metadata headers.</li>
+                    <li><strong>Sanitization Protocol:</strong> All integers (0-9), spaces, tabs, and carriage returns are aggressively stripped from the sequence payload.</li>
+                    <li><strong>Metric Computation:</strong> The engine counts the total valid characters to determine sequence length, and calculates the `(G + C) / Total` ratio.</li>
+                    <li><strong>Block Export:</strong> When downloading the cleaned file, the sequence is automatically hard-wrapped at 80 characters per line to comply with standard database requirements.</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- STACKED RESPONSIVE FOOTER -->
+    <footer class="footer">
+        <div class="footer-container" style="display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center;">
+            <div class="footer-links" style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms & Conditions</a>
+                <a href="/dmca">DMCA Policy</a>
+                <a href="/disclaimer">Disclaimer</a>
+            </div>
+            <div class="footer-text" style="width: 100%; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+                &copy; 2026 GenoParse | Engineered by <a href="https://rupamdas.in/" target="_blank">Rupam Das</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- EXTERNAL TOOL LOGIC -->
+    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const modules = document.querySelectorAll('.cyber-player-module');
+            modules.forEach(module => {
+                const videoId = module.getAttribute('data-video-id');
+                const thumbnail = module.querySelector('.cyber-thumbnail');
+                const ytButton = module.querySelector('.cyber-yt-btn');
+
+                if (videoId && videoId !== "YOUR_VIDEO_ID_HERE") {
+                    if (thumbnail) {
+                        thumbnail.style.backgroundImage = `url('https://img.youtube.com/vi/${videoId}/maxresdefault.jpg')`;
+                    }
+                    if (ytButton) {
+                        ytButton.href = `https://www.youtube.com/watch?v=${videoId}`;
+                    }
+                }
+            });
+        });
+
+        function loadCyberPlayer(element) {
+            const frame = element.closest('.cyber-player-frame');
+            if (frame.classList.contains('is-playing')) return;
+            const module = element.closest('.cyber-player-module');
+            const videoId = module.getAttribute('data-video-id');
+            const wrapper = module.querySelector('.cyber-iframe-wrapper');
+            
+            if (!videoId || videoId === "YOUR_VIDEO_ID_HERE") {
+                alert("Please add a YouTube Video ID to the data-video-id attribute.");
+                return;
+            }
+
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('allowfullscreen', '1');
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframe.setAttribute('src', `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`);
+            
+            wrapper.appendChild(iframe);
+            frame.classList.add('is-playing');
+        }
+    </script>
+</body>
+</html>
