@@ -44,9 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
         'GGU': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'
     };
 
-    // Update character counts dynamically
+  // Update character counts dynamically
     const updateCounts = () => {
-        const dnaLen = dnaInput.value.replace(/\s+/g, '').length;
+        const cleanDNA = cleanDNASequence(dnaInput.value);
+        const dnaLen = cleanDNA.length;
         const rnaLen = rnaOutput.value.replace(/\s+/g, '').length;
         const proteinLen = proteinOutput.value.replace(/\s+/g, '').length;
         
