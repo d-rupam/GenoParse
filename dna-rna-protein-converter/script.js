@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return dnaSeq.replace(/T/g, 'U');
     };
 
-    // Step 2: Translation (RNA -> Protein)
+// Step 2: Translation (RNA -> Protein)
     const translateToProtein = (rnaSeq) => {
         let proteinSeq = '';
         let startIndex = rnaSeq.indexOf('AUG');
@@ -82,7 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let codon = rnaSeq.substring(i, i + 3);
             let aminoAcid = codonTable[codon];
             
-            if (aminoAcid === '*') break; // Stop synthesis at stop codon
+            if (aminoAcid === '*') {
+                proteinSeq += '*'; // Mark the stop codon
+                continue; // Keep translating the rest of the genome instead of halting
+            }
             if (aminoAcid) proteinSeq += aminoAcid;
         }
         return proteinSeq;
