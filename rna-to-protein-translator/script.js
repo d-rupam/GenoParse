@@ -36,29 +36,28 @@ document.addEventListener('DOMContentLoaded', () => {
         'GGU': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'
     };
 
-    // Update character counts dynamically
-    const updateCounts = () => {
-        const inputLen = rnaInput.value.replace(/\s+/g, '').length;
-        const outputLen = proteinOutput.value.replace(/\s+/g, '').length;
-        inputCount.textContent = `${inputLen} bases`;
-        outputCount.textContent = `${outputLen} amino acids`;
-    };
-
-    rnaInput.addEventListener('input', updateCounts);
-
-    // CoreFASTA Parser & Sanitizer
+    // Ultimate Strict Sanitizer: Strips headers, spaces, line breaks, and non-RNA chars entirely
     const cleanRNASequence = (rawText) => {
         let lines = rawText.split('\n');
-        // Filter out FASTA headers (lines starting with '>') and comments
         let sequenceLines = lines.filter(line => !line.trim().startsWith('>'));
         let rawSeq = sequenceLines.join('');
         
-        // Remove spaces, numbers, and anything that isn't A, U, G, or C (case-insensitive)
-        rawSeq = rawSeq.replace(/[^AaUuGgCc]/g, '').toUpperCase();
-        return rawSeq;
+        // Aggressively strip everything except explicit uppercase/lowercase A, U, G, C
+        return rawSeq.replace(/[^augcAUGC]/g, '').toUpperCase();
     };
 
-    // Translation Logic
+    // Update character counts dynamically and synchronously
+    const updateCounts = (rnaText = '', proteinText = '') => {
+        const cleanRNA = cleanRNASequence(rnaText || rnaInput.value);
+        const cleanProtein = proteinText || proteinOutput.value.replace(/[^A-Z*]/g, '');
+        
+        inputCount.textContent = `${cleanRNA.length} bases`;
+        outputCount.textContent = `${cleanProtein.length} amino acids`;
+    };
+
+    rnaInput.addEventListener('input', () => updateCounts());
+
+    // Translation Logic - Updated to continue past stop codons for whole genomes
     const translateToProtein = (rnaSeq) => {
         let proteinSeq = '';
         
@@ -73,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let aminoAcid = codonTable[codon];
             
             if (aminoAcid === '*') {
-                break; // Stop codon detected, halt synthesis
+                proteinSeq += '*'; // Mark stop codon and continue translation
+                continue;
             }
             if (aminoAcid) {
                 proteinSeq += aminoAcid;
@@ -95,14 +95,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const protein = translateToProtein(cleanRNA);
         proteinOutput.value = protein;
-        updateCounts();
+        
+        // Pass explicit strings to force identical length calculation
+        updateCounts(cleanRNA, protein);
     });
 
     // Clear Workspace
     btnClear.addEventListener('click', () => {
         rnaInput.value = '';
         proteinOutput.value = '';
-        updateCounts();
+        updateCounts('', '');
     });
 
     // Copy to Clipboard
@@ -166,7 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         reader.onload = (e) => {
             rnaInput.value = e.target.result;
-            updateCounts();
+            const cleanRNA = cleanRNASequence(e.target.result);
+            updateCounts(cleanRNA, '');
         };
         reader.readAsText(file);
     };
