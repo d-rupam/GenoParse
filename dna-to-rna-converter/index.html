@@ -273,124 +273,94 @@
         }
 
 
-/* --- LIVE TRANSCRIPTION ANIMATION MODULE --- */
+/* --- PREMIUM LIVE TRANSCRIPTION ANIMATION --- */
 .transcription-stage {
     position: relative;
-    height: 220px;
-    background: #0B0F17;
+    height: 260px;
+    background: radial-gradient(circle at center, #18181b 0%, #09090b 100%);
     border: 1px solid var(--border-subtle);
-    border-radius: 8px;
+    border-radius: 12px;
     margin-top: 1.5rem;
     overflow: hidden;
     font-family: 'JetBrains Mono', monospace;
+    box-shadow: inset 0 0 30px rgba(6, 182, 212, 0.05);
 }
 
-.dna-strand {
-    position: absolute;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    z-index: 1;
-}
-.dna-strand.coding { top: 40px; }
-.dna-strand.template { bottom: 40px; }
+/* DNA Strands */
+.dna-strand { position: absolute; width: 100%; display: flex; align-items: center; padding: 0 20px; z-index: 2; }
+.dna-strand.coding { top: 30px; }
+.dna-strand.template { bottom: 30px; }
 
-.strand-label { font-weight: 800; font-size: 16px; width: 45px; flex-shrink: 0; }
+.strand-label { font-weight: 800; font-size: 16px; width: 50px; flex-shrink: 0; }
 .coding .strand-label { color: #52525b; }
-.template .strand-label { color: #fff; } /* Highlights the active template */
+.template .strand-label { color: var(--theme-color); text-shadow: 0 0 8px rgba(6,182,212,0.4); }
 
-.backbone {
-    flex-grow: 1;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 10px;
-}
-.coding .backbone { border-bottom: 3px solid #27272a; margin-bottom: -15px; }
-.template .backbone { border-top: 3px solid #fff; margin-top: -15px; }
+.backbone { flex-grow: 1; position: relative; display: flex; justify-content: space-between; padding: 0 15px; }
+.coding .backbone { border-bottom: 2px solid #27272a; margin-bottom: -20px; }
+.template .backbone { border-top: 2px solid var(--theme-color); margin-top: -20px; box-shadow: 0 -2px 10px rgba(6,182,212,0.2); }
 
-.base { font-size: 18px; font-weight: bold; }
-.coding .base { transform: translateY(-25px); color: #52525b; }
-.template .base { transform: translateY(5px); color: #fff; }
+.base { font-size: 18px; font-weight: bold; width: 20px; text-align: center; }
+.coding .base { transform: translateY(-28px); color: #52525b; }
+.template .base { transform: translateY(8px); color: #fff; }
 
-/* Moving Enzyme */
+/* Nucleotide Colors */
+.c-A { color: #ef4444 !important; }
+.c-T { color: #eab308 !important; }
+.c-U { color: #eab308 !important; }
+.c-G { color: #22c55e !important; }
+.c-C { color: #3b82f6 !important; }
+
+/* Polymerase Engine */
 .polymerase {
-    position: absolute;
-    bottom: 25px; /* Riding the template strand */
-    width: 110px;
-    height: 120px;
-    background: rgba(6, 182, 212, 0.15);
-    border: 2px solid var(--theme-color);
-    border-radius: 30px;
-    backdrop-filter: blur(4px);
-    z-index: 5;
-    animation: scanTemplate 8s linear infinite;
-    display: flex;
-    justify-content: center;
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+    position: absolute; bottom: 15px; width: 120px; height: 140px;
+    background: rgba(6, 182, 212, 0.1); border: 2px solid var(--theme-color);
+    border-radius: 40px 40px 30px 30px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 5; animation: scanTemplate 8s linear infinite; display: flex; justify-content: center;
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.2), inset 0 0 20px rgba(6, 182, 212, 0.2);
 }
 .polymerase-label {
-    background: var(--theme-color);
-    color: #000;
-    padding: 2px 10px;
-    font-size: 10px;
-    font-weight: bold;
-    border-radius: 10px;
-    margin-top: -10px;
-    height: 18px;
+    background: var(--theme-color); color: #000; padding: 4px 12px; font-size: 12px;
+    font-weight: 800; border-radius: 12px; margin-top: -12px; height: 24px; letter-spacing: 1px;
 }
 
-/* Growing RNA 5' to 3' */
+/* Growing RNA Transcript (5' -> 3') */
 .rna-transcript {
-    position: absolute;
-    bottom: 85px; /* Inside the polymerase */
-    left: 15%; /* Starts stationary at the promoter */
-    display: flex;
-    align-items: center;
-    height: 30px;
-    z-index: 10;
-    overflow: hidden;
-    white-space: nowrap;
-    animation: synthesizeRNA 8s linear infinite;
-    border-bottom: 3px solid var(--bio-green);
+    position: absolute; bottom: 95px; left: 12%; 
+    display: flex; align-items: center; height: 34px; z-index: 4; overflow: hidden;
+    white-space: nowrap; animation: synthesizeRNA 8s linear infinite;
+    border-bottom: 2px dashed var(--bio-green); background: rgba(0, 255, 170, 0.05); border-radius: 4px 0 0 4px;
 }
-.rna-bases {
-    color: var(--bio-green);
-    font-size: 18px;
-    font-weight: bold;
-    letter-spacing: 12.5px; /* Visually matches DNA spacing */
-    padding-left: 10px;
+.rna-bases { display: flex; justify-content: space-between; width: 100%; padding: 0 15px; }
+.rna-bases .base { transform: translateY(-5px); color: var(--bio-green); text-shadow: 0 0 8px rgba(0,255,170,0.4); }
+
+.end-label { background: var(--bio-green); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 800; }
+.end-label.five-prime { margin-right: 15px; margin-left: 5px; }
+
+/* Connecting Hydrogen Bonds */
+.h-bonds-bg {
+    position: absolute; top: 70px; bottom: 70px; left: 85px; right: 85px;
+    display: flex; justify-content: space-between; z-index: 1; opacity: 0.1;
 }
-.end-label {
-    background: var(--bio-green);
-    color: #000;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-}
-.end-label.five-prime { margin-right: 10px; }
-.end-label.three-prime { margin-left: 10px; box-shadow: 0 0 10px var(--bio-green); }
+.h-bond-line { width: 1px; height: 100%; background: repeating-linear-gradient(to bottom, #fff, #fff 4px, transparent 4px, transparent 8px); }
 
 /* Animation Physics */
 @keyframes scanTemplate {
-    0%, 10% { left: 12%; opacity: 0; }
-    15% { left: 12%; opacity: 1; }
-    85% { left: 70%; opacity: 1; }
-    90%, 100% { left: 70%; opacity: 0; }
+    0%, 10% { left: 8%; opacity: 0; }
+    15% { left: 8%; opacity: 1; }
+    85% { left: 75%; opacity: 1; }
+    90%, 100% { left: 75%; opacity: 0; }
 }
-
 @keyframes synthesizeRNA {
     0%, 15% { width: 0%; opacity: 0; }
     16% { opacity: 1; }
-    85% { width: 58%; opacity: 1; }
-    90%, 100% { width: 58%; opacity: 0; }
+    85% { width: 67%; opacity: 1; }
+    90%, 100% { width: 67%; opacity: 0; }
 }
 
 @media (max-width: 768px) {
-    .rna-bases { letter-spacing: 4px; font-size: 14px; }
-    .base { font-size: 14px; }
+    .base { font-size: 14px; width: 15px; }
+    .strand-label { font-size: 12px; width: 30px; }
+    .h-bonds-bg { left: 60px; right: 60px; }
 }
         
     </style>
@@ -425,11 +395,11 @@
             <!-- Input Panel -->
             <div class="workspace-panel">
                 <div class="panel-header">
-                    <div class="panel-title"><i class="fa-solid fa-terminal"></i> Input: DNA Sequence</div>
+                    <div class="panel-title"><i class="fa-solid fa-terminal"></i> Input: DNA Coding Strand (5' → 3')</div>
                     <div class="char-count" id="input-count">0 bases</div>
                 </div>
                 
-                <textarea id="dna-input" class="sequence-area" placeholder="Paste your raw DNA sequence or full FASTA text here... (e.g., >NC_000001.11 ATGC...)"></textarea>
+                <textarea id="dna-input" class="sequence-area" placeholder="Paste your DNA Coding Strand (Sense) or FASTA text here... (e.g., >NC_000001.11 ATGC...)"></textarea>
                 
                 <div class="dropzone-compact" id="fasta-dropzone">
                     <i class="fa-solid fa-file-arrow-up"></i>
@@ -486,24 +456,36 @@
 <!-- LIVE TRANSCRIPTION VISUALIZATION -->
 <div class="content-block">
     <h2><i class="fa-solid fa-microscope"></i> Live Transcription Mechanics</h2>
-    <p>In biological systems, <strong>DNA-dependent RNA Polymerase</strong> executes transcription by reading the DNA template strand strictly in the <strong>3' → 5' direction</strong>. This allows the enzyme to synthesize the new RNA transcript continuously in the <strong>5' → 3' direction</strong>. Watch the verified mechanism in real-time below.</p>
+    <p>In biological systems, <strong>DNA-dependent RNA Polymerase</strong> executes transcription by reading the DNA template strand strictly in the <strong>3' → 5' direction</strong>. This allows the enzyme to synthesize the new RNA transcript continuously in the <strong>5' → 3' direction</strong>.</p>
     
+    <!-- Educational Disclaimer to clear up Tool vs Animation confusion -->
+    <div style="background: rgba(6, 182, 212, 0.05); border-left: 3px solid var(--theme-color); padding: 12px 16px; margin: 15px 0; border-radius: 0 8px 8px 0; font-size: 0.95rem;">
+        <i class="fa-solid fa-circle-info" style="color: var(--theme-color);"></i> <strong>Note for Students:</strong> Our computational tool above specifically accepts the <strong>Coding (Sense) Strand (5' → 3')</strong> to execute a rapid <code>T → U</code> swap. Do not paste the template strand directly without finding its reverse complement first!
+    </div>
+
     <div class="transcription-stage">
         
-        <!-- Coding Strand -->
+        <!-- Coding Strand (5' -> 3') -->
         <div class="dna-strand coding">
             <span class="strand-label">5'</span>
             <div class="backbone">
-                <span class="base">A</span><span class="base">T</span><span class="base">G</span><span class="base">C</span><span class="base">A</span><span class="base">T</span><span class="base">G</span><span class="base">C</span><span class="base">A</span><span class="base">T</span><span class="base">G</span><span class="base">C</span>
+                <span class="base c-A">A</span><span class="base c-T">T</span><span class="base c-G">G</span><span class="base c-C">C</span><span class="base c-A">A</span><span class="base c-T">T</span><span class="base c-G">G</span><span class="base c-C">C</span><span class="base c-A">A</span><span class="base c-T">T</span><span class="base c-G">G</span><span class="base c-C">C</span>
             </div>
             <span class="strand-label" style="text-align: right;">3'</span>
         </div>
 
-        <!-- The Growing RNA Transcript (5' -> 3' Synthesis) -->
+        <!-- H-Bonds Background -->
+        <div class="h-bonds-bg">
+            <div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div><div class="h-bond-line"></div>
+        </div>
+
+        <!-- Growing RNA Transcript (5' -> 3') -->
         <div class="rna-transcript">
             <span class="end-label five-prime">5'</span>
-            <span class="rna-bases">AUGCAUGCAUGC</span>
-            <span class="end-label three-prime">3'-OH</span>
+            <div class="rna-bases">
+                <!-- Matches Coding strand with U instead of T -->
+                <span class="base c-A">A</span><span class="base c-U">U</span><span class="base c-G">G</span><span class="base c-C">C</span><span class="base c-A">A</span><span class="base c-U">U</span><span class="base c-G">G</span><span class="base c-C">C</span><span class="base c-A">A</span><span class="base c-U">U</span><span class="base c-G">G</span><span class="base c-C">C</span>
+            </div>
         </div>
 
         <!-- Moving RNA Polymerase -->
@@ -511,13 +493,13 @@
             <div class="polymerase-label">RNA POL</div>
         </div>
 
-        <!-- Template Strand (Read 3' -> 5') -->
+        <!-- Active Template Strand (3' -> 5') -->
         <div class="dna-strand template">
-            <span class="strand-label" style="color: #fff;">3'</span>
+            <span class="strand-label">3'</span>
             <div class="backbone">
-                <span class="base">T</span><span class="base">A</span><span class="base">C</span><span class="base">G</span><span class="base">T</span><span class="base">A</span><span class="base">C</span><span class="base">G</span><span class="base">T</span><span class="base">A</span><span class="base">C</span><span class="base">G</span>
+                <span class="base c-T">T</span><span class="base c-A">A</span><span class="base c-C">C</span><span class="base c-G">G</span><span class="base c-T">T</span><span class="base c-A">A</span><span class="base c-C">C</span><span class="base c-G">G</span><span class="base c-T">T</span><span class="base c-A">A</span><span class="base c-C">C</span><span class="base c-G">G</span>
             </div>
-            <span class="strand-label" style="text-align: right; color: #fff;">5'</span>
+            <span class="strand-label" style="text-align: right;">5'</span>
         </div>
 
     </div>
@@ -539,6 +521,12 @@
                     <li><strong>Export:</strong> Use the "Copy Text" button to copy the raw transcript, or click "Download FASTA" to export a properly formatted `.fasta` file.</li>
                 </ul>
             </div>
+
+            <div class="content-block">
+    <h2><i class="fa-solid fa-book-open"></i> NCERT Concept: Coding vs. Template Strand</h2>
+    <p>In molecular biology, transcription involves two DNA strands. This bioinformatics tool specifically processes the <strong>Coding (Sense) Strand (5' → 3')</strong>. Because the coding strand shares the exact same sequence as the newly synthesized mRNA (except for Thymine being replaced by Uracil), this client-side engine executes a rapid, direct <code>T → U</code> computational swap.</p>
+    <p><strong>Note for Students:</strong> In vivo, RNA Polymerase physically reads the <em>Template (Antisense) Strand (3' → 5')</em> to build the RNA transcript via complementary base pairing. If your lab data or exam question provides the template strand, do not paste it here directly. You must first find its reverse complement to get the coding strand before running the transcription.</p>
+</div>
             
             <div class="content-block">
                 <h2><i class="fa-solid fa-laptop-code"></i> The Parsing Metaphor</h2>
