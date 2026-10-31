@@ -198,9 +198,23 @@
         .privacy-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; margin: 0 auto; grid-column: 1 / -1; justify-self: center; }
 
         /* --- CYBER PLAYER MODULE & GRID --- */
-        .tutorials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; width: 100%; margin-bottom: 4rem; }
-        
-        .cyber-player-module { width: 100%; font-family: 'Space Grotesk', sans-serif; box-sizing: border-box; position: relative; }
+        /* --- CYBER PLAYER MODULE & GRID --- */
+        .tutorials-grid { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 2rem; 
+            width: 100%; 
+            margin-bottom: 4rem; 
+        }
+        .cyber-player-module { 
+            width: 100%; 
+            max-width: 360px; /* Locks it to 1/3 width so it doesn't stretch massively */
+            flex: 1 1 300px; 
+            font-family: 'Space Grotesk', sans-serif; 
+            box-sizing: border-box; 
+            position: relative; 
+        }
         .cyber-player-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; padding: 2px; background: linear-gradient(45deg, #008899, #4A154B, #991933); box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2; }
         .cyber-player-frame:hover { background: linear-gradient(45deg, #00E5FF, #FF2A55, #00E5FF); box-shadow: 0 15px 50px rgba(0, 229, 255, 0.4); }
         .cyber-player-container { position: relative; width: 100%; height: 100%; background: #0B0F17; border-radius: 8px; overflow: hidden; cursor: pointer; }
@@ -371,10 +385,8 @@
             85%, 100% { bottom: 4px; }   /* Gly pops out */
         }
 
-        /* --- MEDIA QUERIES --- */
-        @media (max-width: 900px) { 
+       @media (max-width: 900px) { 
             .workspace-grid { grid-template-columns: 1fr; } 
-            .tutorials-grid { grid-template-columns: repeat(2, 1fr); }
         }
         
         @media (max-width: 768px) {
@@ -383,9 +395,13 @@
             .tool-header h1 { font-size: 1.8rem; }
             .content-block { padding: 1.5rem; }
             
-            .tutorials-grid { grid-template-columns: 1fr; }
+            /* Lets the video stretch full width on tiny mobile screens */
+            .cyber-player-module { max-width: 100%; } 
             
-            .mrna-sequence { font-size: 12px; letter-spacing: 1px; padding: 0 5px; }
+            .mrna-sequence, .dna-sequence { font-size: 12px; gap: 10px; }
+            .rt-base { font-size: 14px; width: 15px; }
+            .cdna-bases { gap: 15px; }
+            .rt-label { font-size: 12px; width: 30px; }
         }
     </style>
 </head>
