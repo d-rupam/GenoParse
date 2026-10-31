@@ -44,12 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
         'GGU': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'
     };
 
-    // CoreFASTA Parser (Isolates valid DNA bases: A, T, G, C and strips headers)
+ // Ultimate Strict Sanitizer: Strips headers, spaces, line breaks, and non-DNA chars entirely
     const cleanDNASequence = (rawText) => {
         let lines = rawText.split('\n');
         let sequenceLines = lines.filter(line => !line.trim().startsWith('>'));
         let rawSeq = sequenceLines.join('');
-        return rawSeq.replace(/[^AaTtGgCc]/g, '').toUpperCase();
+        
+        // Aggressively strip everything except explicit uppercase/lowercase A, T, G, C
+        return rawSeq.replace(/[^atgcATGC]/g, '').toUpperCase();
     };
 
     // Update character counts dynamically based on cleaned strings
