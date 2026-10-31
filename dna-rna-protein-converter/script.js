@@ -44,48 +44,45 @@ document.addEventListener('DOMContentLoaded', () => {
         'GGU': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'
     };
 
-  // Update character counts dynamically
-    const updateCounts = () => {
-        const cleanDNA = cleanDNASequence(dnaInput.value);
-        const dnaLen = cleanDNA.length;
-        const rnaLen = rnaOutput.value.replace(/\s+/g, '').length;
-        const proteinLen = proteinOutput.value.replace(/\s+/g, '').length;
-        
-        inputCount.textContent = `${dnaLen} bases`;
-        rnaCount.textContent = `${rnaLen} bases`;
-        proteinCount.textContent = `${proteinLen} aa`;
-    };
-
-    dnaInput.addEventListener('input', updateCounts);
-
     // CoreFASTA Parser (Isolates valid DNA bases: A, T, G, C)
     const cleanDNASequence = (rawText) => {
         let lines = rawText.split('\n');
-        // Filter out FASTA headers
         let sequenceLines = lines.filter(line => !line.trim().startsWith('>'));
         let rawSeq = sequenceLines.join('');
-        // Purge invalid characters
         return rawSeq.replace(/[^AaTtGgCc]/g, '').toUpperCase();
     };
+
+    // Update character counts dynamically based on active values
+    const updateCounts = (dnaText = '', rnaText = '', proteinText = '') => {
+        const cleanDNA = cleanDNASequence(dnaText || dnaInput.value);
+        const cleanRNA = rnaText.replace(/[^AUGC]/g, '');
+        const cleanProtein = proteinText.replace(/[^A-Z*]/g, '');
+        
+        inputCount.textContent = `${cleanDNA.length} bases`;
+        rnaCount.textContent = `${cleanRNA.length} bases`;
+        proteinCount.textContent = `${cleanProtein.length} aa`;
+    };
+
+    dnaInput.addEventListener('input', () => updateCounts());
 
     // Step 1: Transcription (DNA Coding Strand -> RNA)
     const transcribeToRNA = (dnaSeq) => {
         return dnaSeq.replace(/T/g, 'U');
     };
 
-// Step 2: Translation (RNA -> Protein)
+    // Step 2: Translation (RNA -> Protein)
     const translateToProtein = (rnaSeq) => {
         let proteinSeq = '';
         let startIndex = rnaSeq.indexOf('AUG');
-        if (startIndex === -1) startIndex = 0; // Default to frame 1 if no start codon
+        if (startIndex === -1) startIndex = 0; 
 
         for (let i = startIndex; i < rnaSeq.length - 2; i += 3) {
             let codon = rnaSeq.substring(i, i + 3);
             let aminoAcid = codonTable[codon];
             
             if (aminoAcid === '*') {
-                proteinSeq += '*'; // Mark the stop codon
-                continue; // Keep translating the rest of the genome instead of halting
+                proteinSeq += '*'; 
+                continue; 
             }
             if (aminoAcid) proteinSeq += aminoAcid;
         }
@@ -111,7 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
         rnaOutput.value = rnaTranscript;
         proteinOutput.value = proteinChain;
         
-        updateCounts();
+        // Update counts with actual processed outputs
+        updateCounts(cleanDNA, rnaTranscript, proteinChain);
     });
 
     // Clear Workspace
@@ -119,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dnaInput.value = '';
         rnaOutput.value = '';
         proteinOutput.value = '';
-        updateCounts();
+        updateCounts('', '', '');
     });
 
     // --- COPY FUNCTIONS ---
@@ -188,7 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         reader.onload = (e) => {
             dnaInput.value = e.target.result;
-            updateCounts();
+            const cleanDNA = cleanDNASequence(e.target.result);
+            updateCounts(cleanDNA, '', '');
         };
         reader.readAsText(file);
     };
