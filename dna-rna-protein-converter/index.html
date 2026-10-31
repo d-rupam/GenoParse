@@ -572,46 +572,5 @@
     <!-- EXTERNAL TOOL LOGIC -->
     <script src="script.js"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const modules = document.querySelectorAll('.cyber-player-module');
-            modules.forEach(module => {
-                const videoId = module.getAttribute('data-video-id');
-                const thumbnail = module.querySelector('.cyber-thumbnail');
-                const ytButton = module.querySelector('.cyber-yt-btn');
-
-                if (videoId && videoId !== "YOUR_VIDEO_ID_HERE") {
-                    if (thumbnail) {
-                        thumbnail.style.backgroundImage = `url('https://img.youtube.com/vi/${videoId}/maxresdefault.jpg')`;
-                    }
-                    if (ytButton) {
-                        ytButton.href = `https://www.youtube.com/watch?v=${videoId}`;
-                    }
-                }
-            });
-        });
-
-        function loadCyberPlayer(element) {
-            const frame = element.closest('.cyber-player-frame');
-            if (frame.classList.contains('is-playing')) return;
-            const module = element.closest('.cyber-player-module');
-            const videoId = module.getAttribute('data-video-id');
-            const wrapper = module.querySelector('.cyber-iframe-wrapper');
-            
-            if (!videoId || videoId === "YOUR_VIDEO_ID_HERE") {
-                alert("Please add a YouTube Video ID to the data-video-id attribute.");
-                return;
-            }
-
-            const iframe = document.createElement('iframe');
-            iframe.setAttribute('frameborder', '0');
-            iframe.setAttribute('allowfullscreen', '1');
-            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-            iframe.setAttribute('src', `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`);
-            
-            wrapper.appendChild(iframe);
-            frame.classList.add('is-playing');
-        }
-    </script>
 </body>
 </html>
