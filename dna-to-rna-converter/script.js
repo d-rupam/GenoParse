@@ -23,19 +23,15 @@ document.addEventListener("DOMContentLoaded", () => {
     
     /**
      * Parses and sanitizes raw input data.
-     * Removes FASTA headers, spaces, numbers, and non-nucleotide characters.
+     * Ultimate Strict Sanitizer: Strips headers, spaces, line breaks, and non-DNA chars entirely
      */
     function sanitizeDNA(rawText) {
-        // 1. Remove FASTA header lines (anything starting with '>' until the end of the line)
-        let processedText = rawText.replace(/^>.*$/gm, '');
+        let lines = rawText.split('\n');
+        let sequenceLines = lines.filter(line => !line.trim().startsWith('>'));
+        let rawSeq = sequenceLines.join('');
         
-        // 2. Remove all spaces, tabs, newlines, and numbers
-        processedText = processedText.replace(/[\s\d]/g, '');
-        
-        // 3. Keep strictly DNA characters (A, T, G, C, and N for unknown bases) and force Uppercase
-        processedText = processedText.replace(/[^ATGCatgcNn]/g, '').toUpperCase();
-        
-        return processedText;
+        // Aggressively strip everything except explicit uppercase/lowercase A, T, G, C
+        return rawSeq.replace(/[^atgcATGC]/g, '').toUpperCase();
     }
 
     /**
@@ -47,20 +43,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * Updates the base pair counters in the UI.
+     * Updates the base pair counters in the UI identically.
      */
-    function updateCounts(inCount, outCount) {
-        inputCount.textContent = `${inCount.toLocaleString()} bases`;
-        outputCount.textContent = `${outCount.toLocaleString()} bases`;
+    function updateCounts(dnaText = '', rnaText = '') {
+        const cleanDNA = sanitizeDNA(dnaText || dnaInput.value);
+        const cleanRNA = rnaText || rnaOutput.value.replace(/[^AUGC]/g, '');
+        
+        inputCount.textContent = `${cleanDNA.length.toLocaleString()} bases`;
+        outputCount.textContent = `${cleanRNA.length.toLocaleString()} bases`;
     }
 
     // --- Event Listeners: Transcription & UI ---
 
     // Live counter for manual typing
-    dnaInput.addEventListener("input", () => {
-        const currentLength = sanitizeDNA(dnaInput.value).length;
-        inputCount.textContent = `${currentLength.toLocaleString()} bases`;
-    });
+    dnaInput.addEventListener("input", () => updateCounts());
 
     // Execute Transcription Button
     btnTranscribe.addEventListener("click", () => {
@@ -77,7 +73,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update UI
         dnaInput.value = cleanDNA; // Updates the input box to show the cleaned, raw code
         rnaOutput.value = rnaTranscript;
-        updateCounts(cleanDNA.length, rnaTranscript.length);
+        
+        // Pass explicit strings to force identical length calculation
+        updateCounts(cleanDNA, rnaTranscript);
         
         console.log(`[GenoParse] Transcription complete: ${cleanDNA.length} bases processed.`);
     });
@@ -87,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
         dnaInput.value = "";
         rnaOutput.value = "";
         fileInput.value = ""; // Reset file input
-        updateCounts(0, 0);
+        updateCounts('', '');
     });
 
     // Copy to Clipboard Button
@@ -196,11 +194,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const rawFileContent = e.target.result;
             dnaInput.value = rawFileContent; // Load raw content into text area
             
-            // Automatically trigger the character count update
-            const currentLength = sanitizeDNA(rawFileContent).length;
-            inputCount.textContent = `${currentLength.toLocaleString()} bases`;
+            // Automatically trigger the synchronized character count update
+            const cleanDNA = sanitizeDNA(rawFileContent);
+            updateCounts(cleanDNA, '');
             
-            console.log(`[GenoParse] File loaded: ${file.name} (${currentLength} bases detected)`);
+            console.log(`[GenoParse] File loaded: ${file.name} (${cleanDNA.length} bases detected)`);
         };
         
         reader.onerror = () => {
