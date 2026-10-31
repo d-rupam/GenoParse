@@ -36,17 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'GGT': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'
     };
 
-    // Update character counts dynamically
-    const updateCounts = () => {
-        const inputLen = dnaInput.value.replace(/\s+/g, '').length;
-        const outputLen = proteinOutput.value.replace(/\s+/g, '').length;
-        inputCount.textContent = `${inputLen} bases`;
-        outputCount.textContent = `${outputLen} aa`;
-    };
-
-    dnaInput.addEventListener('input', updateCounts);
-
-// Ultimate Strict Sanitizer: Strips headers, spaces, line breaks, and non-DNA chars entirely
+    // Ultimate Strict Sanitizer: Strips headers, spaces, line breaks, and non-DNA chars entirely
     const cleanDNASequence = (rawText) => {
         let lines = rawText.split('\n');
         let sequenceLines = lines.filter(line => !line.trim().startsWith('>'));
@@ -55,6 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Aggressively strip everything except explicit uppercase/lowercase A, T, G, C
         return rawSeq.replace(/[^atgcATGC]/g, '').toUpperCase();
     };
+
+    // Update character counts dynamically based on cleaned strings
+    const updateCounts = (dnaText = '', proteinText = '') => {
+        const cleanDNA = cleanDNASequence(dnaText || dnaInput.value);
+        const cleanProtein = proteinText || proteinOutput.value.replace(/[^A-Z*]/g, '');
+        
+        inputCount.textContent = `${cleanDNA.length} bases`;
+        outputCount.textContent = `${cleanProtein.length} aa`;
+    };
+
+    dnaInput.addEventListener('input', () => updateCounts());
 
     // Compilation Logic (DNA directly to Protein) - Updated for Whole Genomes
     const compileToProtein = (dnaSeq) => {
@@ -94,14 +95,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const protein = compileToProtein(cleanDNA);
         proteinOutput.value = protein;
-        updateCounts();
+        
+        // Pass explicit strings to force identical length calculation
+        updateCounts(cleanDNA, protein);
     });
 
     // Clear Workspace
     btnClear.addEventListener('click', () => {
         dnaInput.value = '';
         proteinOutput.value = '';
-        updateCounts();
+        updateCounts('', '');
     });
 
     // Copy to Clipboard
@@ -165,7 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         reader.onload = (e) => {
             dnaInput.value = e.target.result;
-            updateCounts();
+            const cleanDNA = cleanDNASequence(e.target.result);
+            updateCounts(cleanDNA, '');
         };
         reader.readAsText(file);
     };
