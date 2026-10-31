@@ -16,27 +16,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropzone = document.getElementById('fasta-dropzone');
     const fileInput = document.getElementById('file-input');
 
-    // Update character counts dynamically
-    const updateCounts = () => {
-        const inputLen = rnaInput.value.replace(/\s+/g, '').length;
-        const outputLen = dnaOutput.value.replace(/\s+/g, '').length;
-        inputCount.textContent = `${inputLen} bases`;
-        outputCount.textContent = `${outputLen} bases`;
-    };
-
-    rnaInput.addEventListener('input', updateCounts);
-
-    // CoreFASTA Parser & Sanitizer
+    // Ultimate Strict Sanitizer: Strips headers, spaces, line breaks, and non-RNA chars entirely
     const cleanRNASequence = (rawText) => {
         let lines = rawText.split('\n');
-        // Filter out FASTA headers (lines starting with '>')
         let sequenceLines = lines.filter(line => !line.trim().startsWith('>'));
         let rawSeq = sequenceLines.join('');
         
-        // Remove spaces, numbers, and non-RNA characters
-        rawSeq = rawSeq.replace(/[^AaUuGgCc]/g, '').toUpperCase();
-        return rawSeq;
+        // Aggressively strip everything except explicit uppercase/lowercase A, U, G, C
+        return rawSeq.replace(/[^augcAUGC]/g, '').toUpperCase();
     };
+
+    // Update character counts dynamically and synchronously
+    const updateCounts = (rnaText = '', dnaText = '') => {
+        const cleanRNA = cleanRNASequence(rnaText || rnaInput.value);
+        const cleanDNA = dnaText || dnaOutput.value.replace(/[^ATGC]/g, '');
+        
+        inputCount.textContent = `${cleanRNA.length} bases`;
+        outputCount.textContent = `${cleanDNA.length} bases`;
+    };
+
+    rnaInput.addEventListener('input', () => updateCounts());
 
     // Reverse Transcription Logic (U -> T)
     const reverseTranscribe = (rnaSeq) => {
@@ -56,14 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const dnaScaffold = reverseTranscribe(cleanRNA);
         dnaOutput.value = dnaScaffold;
-        updateCounts();
+        
+        // Pass explicit strings to force identical length calculation
+        updateCounts(cleanRNA, dnaScaffold);
     });
 
     // Clear Workspace
     btnClear.addEventListener('click', () => {
         rnaInput.value = '';
         dnaOutput.value = '';
-        updateCounts();
+        updateCounts('', '');
     });
 
     // Copy to Clipboard
@@ -128,7 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         reader.onload = (e) => {
             rnaInput.value = e.target.result;
-            updateCounts();
+            const cleanRNA = cleanRNASequence(e.target.result);
+            updateCounts(cleanRNA, '');
         };
         reader.readAsText(file);
     };
