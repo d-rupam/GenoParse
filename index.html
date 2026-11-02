@@ -294,30 +294,6 @@
         .theme-reverse { --theme-color: var(--amber-strand); }   
         .theme-unified { --theme-color: var(--molecular-violet); } 
 
-       
-/* --- FOOTER --- */
-        .footer { background-color: var(--bg-header-footer); padding: 1.25rem 2rem; border-top: 1px solid var(--border-subtle); margin-top: auto; }
-        .footer-container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
-        .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
-        .footer-links a:hover { color: var(--theme-color); }
-        .footer-text { color: var(--text-muted); font-size: 0.85rem; width: 100%; border-top: 1px solid var(--border-subtle); padding-top: 1rem; }
-        .footer-text a {
-    color: var(--cyber-cyan);
-    text-decoration: none;
-}
-        
-        /* --- MOBILE RESPONSIVE --- */
-        @media (max-width: 768px) { 
-            main { padding: 1.5rem 1rem; }
-            .custom-header-module { padding: 20px; overflow: hidden; }
-            .dna-bg-wrapper { opacity: 0.15; right: -100px; transform: translateY(-50%) scale(0.4); } 
-            .custom-title { font-size: 20px; } 
-            .category-group { padding: 1.25rem; }
-            .tools-grid { grid-template-columns: 1fr; }
-            .footer-container { grid-template-columns: 1fr; text-align: center; gap: 1rem; }
-        .footer-links, .footer-social { justify-content: center; flex-wrap: wrap; }
-            
 /* --- ACADEMIC ENDORSEMENTS SECTION --- */
         .endorsements-wrapper { margin-bottom: 4rem; width: 100%; }
         
@@ -328,16 +304,16 @@
         .testimonial-track {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center; /* Keeps cards perfectly centered on PC */
+            justify-content: center; 
             gap: 1.5rem;
         }
 
         .testimonial-card {
             width: 100%;
-            max-width: 450px; /* Prevents the single card from stretching massively on PC */
+            max-width: 450px; 
             background-color: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-top: 3px solid #eab308; /* Academic Gold Accent */
+            border-top: 3px solid #eab308; 
             border-radius: 12px;
             padding: 1.5rem;
             position: relative;
@@ -365,13 +341,14 @@
         .testimonial-avatar {
             width: 60px !important;
             height: 60px !important;
-            min-width: 60px; /* Forces exact size so flexbox doesn't crush it */
+            min-width: 60px; 
             min-height: 60px;
             object-fit: cover !important;
             border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-            border: 2px solid #eab308; /* Gold Border */
+            border: 2px solid #eab308; 
             padding: 2px;
             flex-shrink: 0;
+            background: var(--bg-base);
         }
 
         .testimonial-author-details { display: flex; flex-direction: column; }
@@ -379,6 +356,30 @@
         .testimonial-author-details span { font-size: 0.75rem; color: #eab308; line-height: 1.3; }
         
         .testimonial-text { color: var(--text-main); font-size: 0.9rem; line-height: 1.6; font-style: italic; margin: 0; }
+        
+/* --- FOOTER --- */
+        .footer { background-color: var(--bg-header-footer); padding: 1.25rem 2rem; border-top: 1px solid var(--border-subtle); margin-top: auto; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
+        .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--theme-color); }
+        .footer-text { color: var(--text-muted); font-size: 0.85rem; width: 100%; border-top: 1px solid var(--border-subtle); padding-top: 1rem; }
+        .footer-text a {
+    color: var(--cyber-cyan);
+    text-decoration: none;
+}
+        
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) { 
+            main { padding: 1.5rem 1rem; }
+            .custom-header-module { padding: 20px; overflow: hidden; }
+            .dna-bg-wrapper { opacity: 0.15; right: -100px; transform: translateY(-50%) scale(0.4); } 
+            .custom-title { font-size: 20px; } 
+            .category-group { padding: 1.25rem; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .footer-container { grid-template-columns: 1fr; text-align: center; gap: 1rem; }
+        .footer-links, .footer-social { justify-content: center; flex-wrap: wrap; }
+            
            
     </style>
 </head>
